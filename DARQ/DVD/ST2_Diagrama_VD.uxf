@@ -1,0 +1,44 @@
+<diagram program="umletino" version="15.1"><zoom_level>8</zoom_level><element><id>UMLPackage</id><coordinates><x>232</x><y>56</y><w>304</w><h>352</h></coordinates><panel_attributes>AGROPREDIX-MODEL (Flask)
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>248</x><y>112</y><w>272</w><h>32</h></coordinates><panel_attributes>&lt;&lt;component&gt;&gt;
+app.py  (API REST)
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>248</x><y>160</y><w>272</w><h>32</h></coordinates><panel_attributes>&lt;&lt;component&gt;&gt;
+motor_difuso.py
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>248</x><y>208</y><w>272</w><h>32</h></coordinates><panel_attributes>&lt;&lt;component&gt;&gt;
+motor_bayesiano.py</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>248</x><y>256</y><w>272</w><h>32</h></coordinates><panel_attributes>&lt;&lt;component&gt;&gt;
+base_conocimiento.py
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>248</x><y>304</y><w>272</w><h>32</h></coordinates><panel_attributes>&lt;&lt;component&gt;&gt;
+schemas.py
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>640</x><y>56</y><w>304</w><h>352</h></coordinates><panel_attributes>AGROPREDIX-WEB (Django)
+--
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>656</x><y>112</y><w>272</w><h>32</h></coordinates><panel_attributes>&lt;&lt;component&gt;&gt;
+manage.py
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>656</x><y>160</y><w>272</w><h>32</h></coordinates><panel_attributes>&lt;&lt;component&gt;&gt;
+agropredix/settings.py
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>656</x><y>208</y><w>272</w><h>32</h></coordinates><panel_attributes>&lt;&lt;component&gt;&gt;
+usuarios/  (app)
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>656</x><y>256</y><w>272</w><h>32</h></coordinates><panel_attributes>&lt;&lt;component&gt;&gt;
+parcelas/  (app)
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>656</x><y>304</y><w>272</w><h>32</h></coordinates><panel_attributes>&lt;&lt;component&gt;&gt;
+historial_campanas/  (app)
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>656</x><y>352</y><w>272</w><h>32</h></coordinates><panel_attributes>&lt;&lt;component&gt;&gt;
+recomendaciones/  (app)
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLPackage</id><coordinates><x>280</x><y>488</y><w>640</w><h>104</h></coordinates><panel_attributes>AGROPREDIX-DATA (PostgreSQL)
+--
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>296</x><y>528</y><w>136</w><h>48</h></coordinates><panel_attributes>&lt;&lt;component&gt;&gt;
+db_agropredix
+(esquema DJango)
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>448</x><y>528</y><w>136</w><h>48</h></coordinates><panel_attributes>&lt;&lt;component&gt;&gt;
+tabla: usuarios
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>600</x><y>528</y><w>136</w><h>48</h></coordinates><panel_attributes>&lt;&lt;component&gt;&gt;
+tabla: parcelas
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>752</x><y>528</y><w>136</w><h>48</h></coordinates><panel_attributes>&lt;&lt;component&gt;&gt;
+tabla: recomendaciones
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>528</x><y>72</y><w>128</w><h>40</h></coordinates><panel_attributes>lt=-&gt;
+usa API REST
+(HTTP/JSON)</panel_attributes><additional_attributes>10;20;140;20</additional_attributes></element><element><id>Relation</id><coordinates><x>376</x><y>400</y><w>96</w><h>104</h></coordinates><panel_attributes>lt=-&gt;
+consulta reglas y
+datos historicos</panel_attributes><additional_attributes>10;10;10;110</additional_attributes></element><element><id>Relation</id><coordinates><x>712</x><y>400</y><w>88</w><h>120</h></coordinates><panel_attributes>lt=-&gt;
+persistencia
+(ORM Django)</panel_attributes><additional_attributes>10;10;10;130</additional_attributes></element><element><id>UMLPackage</id><coordinates><x>208</x><y>0</y><w>760</w><h>616</h></coordinates><panel_attributes>SISTEMA PREDICTIVO AGROPREDIX
+--</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>248</x><y>352</y><w>272</w><h>32</h></coordinates><panel_attributes>&lt;&lt;component&gt;&gt;
+modelo_predictivo</panel_attributes><additional_attributes></additional_attributes></element></diagram>
