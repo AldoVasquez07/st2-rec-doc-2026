@@ -1,0 +1,48 @@
+<diagram program="umletino" version="15.1"><zoom_level>6</zoom_level><element><id>UMLActor</id><coordinates><x>156</x><y>54</y><w>48</w><h>66</h></coordinates><panel_attributes>Agricultor</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLGeneric</id><coordinates><x>264</x><y>72</y><w>96</w><h>24</h></coordinates><panel_attributes>:PWA_Cliente
+(Cache/SW)</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLGeneric</id><coordinates><x>384</x><y>72</y><w>108</w><h>24</h></coordinates><panel_attributes>:Backend_Django
+(AGROPREDIX-WEB)</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLGeneric</id><coordinates><x>522</x><y>72</y><w>108</w><h>24</h></coordinates><panel_attributes>:Servicio_SENAMHI
+/MINAGRI (API)</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLGeneric</id><coordinates><x>660</x><y>72</y><w>102</w><h>24</h></coordinates><panel_attributes>:Motor_Analitico
+(Flask/Lambda)</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLGeneric</id><coordinates><x>822</x><y>72</y><w>96</w><h>24</h></coordinates><panel_attributes>:BaseDeDatos
+(PostgreSQL)</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>174</x><y>108</y><w>18</w><h>846</h></coordinates><panel_attributes>lt=.</panel_attributes><additional_attributes>10;10;10;1390</additional_attributes></element><element><id>Relation</id><coordinates><x>306</x><y>90</y><w>18</w><h>864</h></coordinates><panel_attributes>lt=.</panel_attributes><additional_attributes>10;10;10;1420</additional_attributes></element><element><id>Relation</id><coordinates><x>438</x><y>90</y><w>18</w><h>864</h></coordinates><panel_attributes>lt=.</panel_attributes><additional_attributes>10;10;10;1420</additional_attributes></element><element><id>Relation</id><coordinates><x>570</x><y>90</y><w>18</w><h>864</h></coordinates><panel_attributes>lt=.</panel_attributes><additional_attributes>10;10;10;1420</additional_attributes></element><element><id>Relation</id><coordinates><x>702</x><y>90</y><w>18</w><h>864</h></coordinates><panel_attributes>lt=.</panel_attributes><additional_attributes>10;10;10;1420</additional_attributes></element><element><id>Relation</id><coordinates><x>864</x><y>90</y><w>18</w><h>864</h></coordinates><panel_attributes>lt=.</panel_attributes><additional_attributes>10;10;10;1420</additional_attributes></element><element><id>Relation</id><coordinates><x>174</x><y>120</y><w>150</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-
+solicitarRecomendacion
+(parcela_id)</panel_attributes><additional_attributes>230;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>306</x><y>180</y><w>126</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-
+obtenerCacheLocal
+(parcela_id)</panel_attributes><additional_attributes>10;10;80;10;80;30;10;30</additional_attributes></element><element><id>Relation</id><coordinates><x>174</x><y>216</y><w>150</w><h>24</h></coordinates><panel_attributes>lt=&lt;.
+mostrarRecomendacionOffline()</panel_attributes><additional_attributes>10;20;230;20</additional_attributes></element><element><id>Relation</id><coordinates><x>306</x><y>270</y><w>150</w><h>24</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-
+POST /api/recomendaciones/</panel_attributes><additional_attributes>230;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>438</x><y>300</y><w>426</w><h>24</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-
+SELECT datos_parcela, historial_cultivos FROM db_agropredix</panel_attributes><additional_attributes>690;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>438</x><y>330</y><w>426</w><h>24</h></coordinates><panel_attributes>lt=&lt;.
+Retorna Ubicacion, CultivoAntecesor, TipoSuelo</panel_attributes><additional_attributes>10;20;690;20</additional_attributes></element><element><id>UMLFrame</id><coordinates><x>378</x><y>366</y><w>282</w><h>156</h></coordinates><panel_attributes>alt
+--
+[Existe Análisis de Suelo adjunto]
+
+
+
+
+--
+[Sin Análisis de Suelo (Estimación Automática RF-0004)]</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>438</x><y>396</y><w>168</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-
+usarValoresLaboratorio(NPK, pH)</panel_attributes><additional_attributes>10;10;70;10;70;30;10;30</additional_attributes></element><element><id>Relation</id><coordinates><x>438</x><y>468</y><w>150</w><h>24</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-
+GET /clima_historico(lat, lon)</panel_attributes><additional_attributes>230;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>438</x><y>486</y><w>150</w><h>24</h></coordinates><panel_attributes>lt=&lt;.
+Retorna Temp, Humedad, Prec</panel_attributes><additional_attributes>10;20;230;20</additional_attributes></element><element><id>Relation</id><coordinates><x>438</x><y>546</y><w>282</w><h>24</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-
+POST /predict (variables_edafoclimaticas, antecesor)</panel_attributes><additional_attributes>450;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>702</x><y>576</y><w>180</w><h>24</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-
+SELECT reglas FROM base_conocimiento</panel_attributes><additional_attributes>280;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>702</x><y>600</y><w>180</w><h>24</h></coordinates><panel_attributes>lt=&lt;.
+Retorna Reglas Lógica Difusa</panel_attributes><additional_attributes>10;20;280;20</additional_attributes></element><element><id>Relation</id><coordinates><x>702</x><y>630</y><w>120</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-
+ejecutarMotorDifuso()</panel_attributes><additional_attributes>10;10;60;10;60;30;10;30</additional_attributes></element><element><id>Relation</id><coordinates><x>702</x><y>666</y><w>132</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-
+ajusteBayesianoCerteza()</panel_attributes><additional_attributes>10;10;60;10;60;30;10;30</additional_attributes></element><element><id>Relation</id><coordinates><x>702</x><y>708</y><w>126</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-
+generarExplicacionXAI()</panel_attributes><additional_attributes>10;10;60;10;60;30;10;30</additional_attributes></element><element><id>Relation</id><coordinates><x>438</x><y>750</y><w>282</w><h>24</h></coordinates><panel_attributes>lt=&lt;.
+JSON (ranking_cultivos, %confianza, reglas_activadas)</panel_attributes><additional_attributes>10;20;450;20</additional_attributes></element><element><id>Relation</id><coordinates><x>438</x><y>780</y><w>444</w><h>24</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-
+INSERT INTO recomendacion, detalle_recomendacion</panel_attributes><additional_attributes>720;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>438</x><y>804</y><w>444</w><h>24</h></coordinates><panel_attributes>lt=&lt;.
+Confirmación de guardado</panel_attributes><additional_attributes>10;20;720;20</additional_attributes></element><element><id>Relation</id><coordinates><x>306</x><y>840</y><w>150</w><h>24</h></coordinates><panel_attributes>lt=&lt;.
+HTTP 200 OK (Recomendaciones)</panel_attributes><additional_attributes>10;20;230;20</additional_attributes></element><element><id>Relation</id><coordinates><x>306</x><y>864</y><w>132</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;&lt;-
+almacenarEnCacheLocal()</panel_attributes><additional_attributes>10;10;60;10;60;30;10;30</additional_attributes></element><element><id>Relation</id><coordinates><x>174</x><y>900</y><w>150</w><h>24</h></coordinates><panel_attributes>lt=&lt;.
+Renderizar Dashboard + XAI</panel_attributes><additional_attributes>10;20;230;20</additional_attributes></element><element><id>UMLFrame</id><coordinates><x>156</x><y>156</y><w>768</w><h>786</h></coordinates><panel_attributes>alt
+--
+[Sin conexión a Internet (Modo Offline PWA)]
+
+
+
+
+
+
+
+--
+[Con Conexión a Internet]</panel_attributes><additional_attributes></additional_attributes></element></diagram>

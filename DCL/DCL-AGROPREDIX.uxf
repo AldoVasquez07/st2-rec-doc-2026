@@ -1,0 +1,243 @@
+<diagram program="umletino" version="15.1"><zoom_level>4</zoom_level><element><id>UMLClass</id><coordinates><x>228</x><y>184</y><w>104</w><h>76</h></coordinates><panel_attributes>Usuario
+--
+- id_usuario : int
+- nombre : String
+- celular : String
+- correo : String
+- password_hash : String
+- fecha_registro : DateTime
+- activo : boolean
+--
++ autenticar() : boolean
++ registrar() : boolean
++ actualizarPerfil() : boolean
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>384</x><y>184</y><w>104</w><h>88</h></coordinates><panel_attributes>Parcela
+--
+- id_parcela : int
+- id_usuario : int
+- id_distrito : int
+- nombre : String
+- area_ha : float
+- latitud : float
+- longitud : float
+- referencia : String
+- fecha_registro : DateTime
+--
++ registrarParcela() : boolean
++ obtenerHistorial() : List
++ obtenerUbicacion() : String
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>540</x><y>184</y><w>104</w><h>56</h></coordinates><panel_attributes>Distrito
+--
+- id_distrito : int
+- nombre : String
+- provincia : String
+- departamento : String
+--
++ obtenerDatosAgroclimaticos() : List
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>696</x><y>184</y><w>104</w><h>68</h></coordinates><panel_attributes>DatoAgroclimatico
+--
+- id_dato : int
+- id_distrito : int
+- fecha : Date
+- temperatura : float
+- humedad : float
+- precipitacion : float
+- fuente : String
+--
++ consultarSENAMHI() : void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>384</x><y>60</y><w>104</w><h>80</h></coordinates><panel_attributes>Recordatorio
+--
+- id_recordatorio : int
+- id_parcela : int
+- tipo_evento : String
+- fecha_programada : Date
+- canal : String
+- activo : boolean
+- enviado : boolean
+--
++ programarNotificacion() : void
++ enviarAlerta() : boolean
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>540</x><y>72</y><w>104</w><h>80</h></coordinates><panel_attributes>AlertaFitosanitaria
+--
+- id_alerta : int
+- id_parcela : int
+- tipo_riesgo : String
+- nivel_riesgo : String
+- factor_causa : String
+- mensaje : String
+- fecha_generacion : DateTime
+- vigente : boolean
+--
++ evaluarRiesgo() : void
++ notificarRiesgoAlto() : void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>228</x><y>308</y><w>104</w><h>84</h></coordinates><panel_attributes>SolicitudAsistencia
+--
+- id_solicitud : int
+- id_usuario : int
+- id_recomendacion : int
+- descripcion_duda : String
+- estado : String
+- respuesta : String
+- fecha_envio : DateTime
+- fecha_respuesta : DateTime
+--
++ crearSolicitud() : void
++ responderSolicitud() : void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>384</x><y>308</y><w>104</w><h>64</h></coordinates><panel_attributes>Recomendacion
+--
+- id_recomendacion : int
+- id_parcela : int
+- id_cultivo_antecesor : int
+- fecha_generacion : DateTime
+- confianza_global : float
+--
++ generarRecomendacion() : void
++ obtenerExplicacionXAI() : String
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>540</x><y>308</y><w>104</w><h>68</h></coordinates><panel_attributes>HistorialCampana
+--
+- id_campana : int
+- id_parcela : int
+- id_cultivo : int
+- campana : String
+- mes_siembra : int
+- resultado : String
+- fecha_registro : DateTime
+--
++ registrarCampana() : boolean
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>696</x><y>308</y><w>104</w><h>92</h></coordinates><panel_attributes>CondicionParcela
+--
+- id_condicion : int
+- id_parcela : int
+- ph : float
+- nitrogeno : float
+- fosforo : float
+- potasio : float
+- materia_organica : float
+- textura : String
+- drenaje : String
+- origen : String
+- fecha_estimacion : DateTime
+--
++ estimarParametros() : void
++ cargarAnalisisSuelo() : void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>228</x><y>436</y><w>104</w><h>60</h></coordinates><panel_attributes>Retroalimentacion
+--
+- id_retro : int
+- id_recomendacion : int
+- valoracion : String
+- comentario : String
+- fecha_registro : DateTime
+--
++ guardarFeedback() : boolean
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>384</x><y>436</y><w>104</w><h>76</h></coordinates><panel_attributes>DetalleRecomendacion
+--
+- id_detalle : int
+- id_recomendacion : int
+- id_cultivo : int
+- posicion : int
+- indice_idoneidad : float
+- probabilidad_exito : float
+- confianza_pct : float
+- explicacion_resumen : String
+--
++ calcularProbabilidad() : float
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>540</x><y>436</y><w>104</w><h>56</h></coordinates><panel_attributes>Cultivo
+--
+- id_cultivo : int
+- nombre_comun : String
+- nombre_cientifico : String
+- familia_botanica : String
+- ciclo_dias : int
+--
++ obtenerDetalles() : String
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>696</x><y>436</y><w>104</w><h>56</h></coordinates><panel_attributes>CompatibilidadCultivo
+--
+- id_compatibilidad : int
+- id_cultivo_antecesor : int
+- id_cultivo_sucesor : int
+- puntaje_idoneidad : float
+- observacion : String
+--
++ evaluarCompatibilidad() : float
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>384</x><y>544</y><w>104</w><h>56</h></coordinates><panel_attributes>ReglaActivada
+--
+- id_regla_activada : int
+- id_detalle : int
+- id_regla : int
+- grado_activacion : float
+- influencia_pct : float
+--
++ registrarActivacion() : void
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>540</x><y>544</y><w>104</w><h>76</h></coordinates><panel_attributes>ReglaConocimiento
+--
+- id_regla : int
+- id_cultivo : int
+- variable : String
+- termino_linguistico : String
+- condicion : String
+- peso : float
+- descripcion_simple : String
+- activa : boolean
+--
++ evaluarRegla() : float
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>328</x><y>208</y><w>64</w><h>20</h></coordinates><panel_attributes>lt=&lt;-
+m1=0..*
+m2=1
+posee</panel_attributes><additional_attributes>140;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>484</x><y>208</y><w>64</w><h>20</h></coordinates><panel_attributes>lt=-&gt;
+m1=0..*
+m2=1
+ubica</panel_attributes><additional_attributes>10;20;140;20</additional_attributes></element><element><id>Relation</id><coordinates><x>640</x><y>208</y><w>64</w><h>20</h></coordinates><panel_attributes>lt=-&gt;
+m1=1
+m2=0..*
+registra</panel_attributes><additional_attributes>10;20;140;20</additional_attributes></element><element><id>Relation</id><coordinates><x>276</x><y>256</y><w>24</w><h>60</h></coordinates><panel_attributes>lt=-&gt;
+m1=1
+m2=0..*
+envia</panel_attributes><additional_attributes>10;10;10;130</additional_attributes></element><element><id>Relation</id><coordinates><x>328</x><y>328</y><w>64</w><h>20</h></coordinates><panel_attributes>lt=&lt;-
+m1=0..*
+m2=1
+adjunta</panel_attributes><additional_attributes>10;20;140;20</additional_attributes></element><element><id>Relation</id><coordinates><x>432</x><y>268</y><w>28</w><h>48</h></coordinates><panel_attributes>lt=-&gt;
+m1=1
+m2=0..*
+genera</panel_attributes><additional_attributes>10;10;10;100</additional_attributes></element><element><id>Relation</id><coordinates><x>460</x><y>268</y><w>120</w><h>48</h></coordinates><panel_attributes>lt=-&gt;
+m1=1
+m2=0..*
+tiene</panel_attributes><additional_attributes>10;10;10;70;260;70;260;100</additional_attributes></element><element><id>Relation</id><coordinates><x>480</x><y>268</y><w>260</w><h>48</h></coordinates><panel_attributes>lt=-&gt;
+m1=1
+m2=0..*
+estima</panel_attributes><additional_attributes>10;10;10;50;610;50;610;100</additional_attributes></element><element><id>Relation</id><coordinates><x>432</x><y>136</y><w>32</w><h>56</h></coordinates><panel_attributes>lt=&lt;-
+m1=0..*
+m2=1
+programa</panel_attributes><additional_attributes>10;10;10;120</additional_attributes></element><element><id>Relation</id><coordinates><x>476</x><y>148</y><w>100</w><h>44</h></coordinates><panel_attributes>lt=&lt;-
+m1=0..*
+m2=1
+emite</panel_attributes><additional_attributes>210;10;210;60;10;60;10;90</additional_attributes></element><element><id>Relation</id><coordinates><x>432</x><y>368</y><w>32</w><h>76</h></coordinates><panel_attributes>lt=-&gt;
+m1=1
+m2=1..*
+contiene</panel_attributes><additional_attributes>10;10;10;170</additional_attributes></element><element><id>Relation</id><coordinates><x>276</x><y>368</y><w>124</w><h>76</h></coordinates><panel_attributes>lt=&lt;-
+m1=0..*
+m2=1
+recibe</panel_attributes><additional_attributes>10;170;10;130;280;130;280;10</additional_attributes></element><element><id>Relation</id><coordinates><x>472</x><y>368</y><w>100</w><h>76</h></coordinates><panel_attributes>lt=-&gt;
+m1=0..*
+m2=0..1
+antecesor</panel_attributes><additional_attributes>10;10;10;140;210;140;210;170</additional_attributes></element><element><id>Relation</id><coordinates><x>484</x><y>452</y><w>64</w><h>20</h></coordinates><panel_attributes>lt=-&gt;
+m1=0..*
+m2=1
+propone</panel_attributes><additional_attributes>10;20;140;20</additional_attributes></element><element><id>Relation</id><coordinates><x>588</x><y>372</y><w>28</w><h>72</h></coordinates><panel_attributes>lt=-&gt;
+m1=0..*
+m2=1
+siembra</panel_attributes><additional_attributes>10;10;10;160</additional_attributes></element><element><id>Relation</id><coordinates><x>640</x><y>444</y><w>64</w><h>20</h></coordinates><panel_attributes>lt=-&gt;
+m1=0..*
+m2=1
+antecesor</panel_attributes><additional_attributes>140;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>640</x><y>464</y><w>64</w><h>20</h></coordinates><panel_attributes>lt=-&gt;
+m1=0..*
+m2=1
+sucesor</panel_attributes><additional_attributes>140;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>588</x><y>488</y><w>24</w><h>64</h></coordinates><panel_attributes>lt=-&gt;
+m1=1
+m2=0..*
+define</panel_attributes><additional_attributes>10;10;10;140</additional_attributes></element><element><id>Relation</id><coordinates><x>432</x><y>508</y><w>24</w><h>44</h></coordinates><panel_attributes>lt=-&gt;
+m1=1
+m2=0..*
+activa</panel_attributes><additional_attributes>10;10;10;90</additional_attributes></element><element><id>Relation</id><coordinates><x>484</x><y>560</y><w>64</w><h>20</h></coordinates><panel_attributes>lt=-&gt;
+m1=0..*
+m2=1
+aplica</panel_attributes><additional_attributes>10;20;140;20</additional_attributes></element></diagram>
