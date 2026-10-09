@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" agent="AgroPredix">
+  <diagram id="seq-registrar-parcela" name="SD - Registrar Parcela Agrícola">
+    <mxGraphModel dx="1200" dy="800" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1200" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- LÍNEAS DE VIDA (LIFELINES) -->
+        <mxCell id="actor" value="Agricultor" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="60" y="40" width="100" height="650" as="geometry" />
+        </mxCell>
+
+        <mxCell id="ui" value="ui_parcela" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="260" y="40" width="120" height="650" as="geometry" />
+        </mxCell>
+
+        <mxCell id="gs" value="gs_parcela" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="480" y="40" width="120" height="650" as="geometry" />
+        </mxCell>
+
+        <mxCell id="api" value="APIMaps" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="700" y="40" width="100" height="650" as="geometry" />
+        </mxCell>
+
+        <mxCell id="db" value="agropredix_db" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;fillColor=#FFFFFF;strokeColor=#000000;fontColor=#000000;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="900" y="40" width="120" height="650" as="geometry" />
+        </mxCell>
+
+        <!-- MENSAJES Y PASOS -->
+        <mxCell id="m1" value="1: abrirFormulario()" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;strokeColor=#000000;fontColor=#000000;" edge="1" parent="1" source="actor" target="ui">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="110" y="120" as="sourcePoint"/><mxPoint x="320" y="120" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="m2" value="2: obtenerMapa()" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;strokeColor=#000000;fontColor=#000000;" edge="1" parent="1" source="ui" target="gs">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="320" y="150" as="sourcePoint"/><mxPoint x="540" y="150" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="m3" value="3: solicitarMap" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;strokeColor=#000000;fontColor=#000000;" edge="1" parent="1" source="gs" target="api">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="540" y="180" as="sourcePoint"/><mxPoint x="750" y="180" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="m4" value="4: retornaMap" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;edgeStyle=elbowEdgeStyle;elbow=vertical;strokeColor=#000000;fontColor=#000000;" edge="1" parent="1" source="api" target="gs">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="750" y="210" as="sourcePoint"/><mxPoint x="540" y="210" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="m5" value="5: mostrarFormulario()" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;edgeStyle=elbowEdgeStyle;elbow=vertical;strokeColor=#000000;fontColor=#000000;" edge="1" parent="1" source="gs" target="ui">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="540" y="240" as="sourcePoint"/><mxPoint x="320" y="240" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="m6" value="6: seleccionarPunto()" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;strokeColor=#000000;fontColor=#000000;" edge="1" parent="1" source="actor" target="ui">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="110" y="280" as="sourcePoint"/><mxPoint x="320" y="280" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="m7" value="7: ingresarDatos()" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;strokeColor=#000000;fontColor=#000000;" edge="1" parent="1" source="actor" target="ui">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="110" y="320" as="sourcePoint"/><mxPoint x="320" y="320" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="m8" value="8: guardarParcela()" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;strokeColor=#000000;fontColor=#000000;" edge="1" parent="1" source="actor" target="ui">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="110" y="360" as="sourcePoint"/><mxPoint x="320" y="360" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="m9" value="9: POST /api/parcelas" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;strokeColor=#000000;fontColor=#000000;" edge="1" parent="1" source="ui" target="gs">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="320" y="400" as="sourcePoint"/><mxPoint x="540" y="400" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="m10" value="10: INSERT INTO parcelas" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;strokeColor=#000000;fontColor=#000000;" edge="1" parent="1" source="gs" target="db">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="540" y="440" as="sourcePoint"/><mxPoint x="960" y="440" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="m11" value="11: confirmación (id_parcela)" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;edgeStyle=elbowEdgeStyle;elbow=vertical;strokeColor=#000000;fontColor=#000000;" edge="1" parent="1" source="db" target="gs">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="960" y="480" as="sourcePoint"/><mxPoint x="540" y="480" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="m12" value="12: HTTP 201 Created" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;edgeStyle=elbowEdgeStyle;elbow=vertical;strokeColor=#000000;fontColor=#000000;" edge="1" parent="1" source="gs" target="ui">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="540" y="520" as="sourcePoint"/><mxPoint x="320" y="520" as="targetPoint"/></mxGeometry>
+        </mxCell>
+
+        <mxCell id="m13" value="13: actualizarLista()" style="html=1;verticalAlign=bottom;endArrow=block;edgeStyle=elbowEdgeStyle;elbow=vertical;strokeColor=#000000;fontColor=#000000;" edge="1" parent="1" source="ui" target="ui">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="325" y="550" as="sourcePoint"/><mxPoint x="370" y="580" as="targetPoint"/><Array as="points"><mxPoint x="360" y="550"/><mxPoint x="360" y="580"/></Array></mxGeometry>
+        </mxCell>
+
+        <mxCell id="m14" value="14: mostrarExito()" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;edgeStyle=elbowEdgeStyle;elbow=vertical;strokeColor=#000000;fontColor=#000000;" edge="1" parent="1" source="ui" target="actor">
+          <mxGeometry relative="1" as="geometry"><mxPoint x="320" y="610" as="sourcePoint"/><mxPoint x="110" y="610" as="targetPoint"/></mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
