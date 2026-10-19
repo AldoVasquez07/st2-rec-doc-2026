@@ -1,0 +1,120 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="WI2jtBnYpq2jyOk2xddI" name="Página-1">
+    <mxGraphModel dx="1363" dy="754" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="cu3-alt2-19" parent="1" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=60;verticalAlign=top;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;Agricultor" vertex="1">
+          <mxGeometry height="826" width="40" x="90" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cu3-alt2-20" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=44;fillColor=#dae8fc;strokeColor=#6c8ebf;" value=":PWA_Cliente" vertex="1">
+          <mxGeometry height="826" width="130" x="275" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cu3-alt2-21" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=44;fillColor=#dae8fc;strokeColor=#6c8ebf;" value=":AGROPREDIX-WEB&lt;br&gt;(Django)" vertex="1">
+          <mxGeometry height="826" width="130" x="525" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cu3-alt2-22" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=44;fillColor=#dae8fc;strokeColor=#6c8ebf;" value=":AGROPREDIX-DATA&lt;br&gt;(PostgreSQL)" vertex="1">
+          <mxGeometry height="826" width="130" x="765" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cu3-alt2-3" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" value="verEvaluacion(id_recomendacion)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="110" y="160" as="sourcePoint" />
+            <mxPoint x="340" y="160" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt2-4" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" value="GET /retroalimentaciones/?recomendacion={id}">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="340" y="208" as="sourcePoint" />
+            <mxPoint x="590" y="208" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt2-5" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" value="SELECT * FROM retroalimentacion&lt;br&gt;WHERE id_recomendacion = :id">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="590" y="256" as="sourcePoint" />
+            <mxPoint x="830" y="256" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt2-6" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;" value="datos_retroalimentacion">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="830" y="304" as="sourcePoint" />
+            <mxPoint x="590" y="304" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt2-7" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;" value="HTTP 200 OK">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="590" y="352" as="sourcePoint" />
+            <mxPoint x="340" y="352" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt2-8" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;" value="renderEvaluacion()">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="385" y="400" />
+              <mxPoint x="385" y="424" />
+            </Array>
+            <mxPoint x="340" y="400" as="sourcePoint" />
+            <mxPoint x="340" y="424" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt2-9" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;" value="mostrarEvaluacion(valoración, comentario, fecha)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="340" y="456" as="sourcePoint" />
+            <mxPoint x="110" y="456" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt2-10" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" value="editarComentario()">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="110" y="504" as="sourcePoint" />
+            <mxPoint x="340" y="504" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt2-11" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" value="actualizar()">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="110" y="552" as="sourcePoint" />
+            <mxPoint x="340" y="552" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt2-12" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" value="PUT /retroalimentaciones/{id}/ (JSON)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="340" y="600" as="sourcePoint" />
+            <mxPoint x="590" y="600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt2-13" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" value="UPDATE retroalimentacion SET comentario = ...">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="590" y="648" as="sourcePoint" />
+            <mxPoint x="830" y="648" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt2-14" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;" value="confirmación">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="830" y="696" as="sourcePoint" />
+            <mxPoint x="590" y="696" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt2-15" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;" value="HTTP 200 OK">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="590" y="744" as="sourcePoint" />
+            <mxPoint x="340" y="744" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt2-16" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;" value="actualizarUI()">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="385" y="792" />
+              <mxPoint x="385" y="816" />
+            </Array>
+            <mxPoint x="340" y="792" as="sourcePoint" />
+            <mxPoint x="340" y="816" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt2-17" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;" value="exitoActualizado()">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="340" y="848" as="sourcePoint" />
+            <mxPoint x="110" y="848" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

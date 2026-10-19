@@ -1,0 +1,101 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="2O8-XyaHuDJmu-SK78oC" name="Página-1">
+    <mxGraphModel dx="1547" dy="856" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="cu3-alt3-15" parent="1" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=60;verticalAlign=top;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(#000000, var(--ge-light-color, #ffffff));&quot;&gt;Agricultor&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="646" width="40" x="90" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cu3-alt3-16" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=44;fillColor=#dae8fc;strokeColor=#6c8ebf;" value=":PWA_Cliente" vertex="1">
+          <mxGeometry height="646" width="130" x="275" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cu3-alt3-17" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=44;fillColor=#dae8fc;strokeColor=#6c8ebf;" value=":AGROPREDIX-WEB&lt;br&gt;(Django)" vertex="1">
+          <mxGeometry height="646" width="130" x="525" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cu3-alt3-18" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=44;fillColor=#dae8fc;strokeColor=#6c8ebf;" value=":AGROPREDIX-DATA&lt;br&gt;(PostgreSQL)" vertex="1">
+          <mxGeometry height="646" width="130" x="765" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cu3-alt3-3" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" value="guardarRetroalimentacion() [sin conexión]">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="110" y="160" as="sourcePoint" />
+            <mxPoint x="340" y="160" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt3-4" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;" value="detectarSinConexion()">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="385" y="208" />
+              <mxPoint x="385" y="232" />
+            </Array>
+            <mxPoint x="340" y="208" as="sourcePoint" />
+            <mxPoint x="340" y="232" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt3-5" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;" value="guardarEnIndexedDB(retro,&lt;div&gt;estado = pendiente)&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="385" y="264" />
+              <mxPoint x="385" y="288" />
+            </Array>
+            <mxPoint x="340" y="264" as="sourcePoint" />
+            <mxPoint x="340" y="288" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt3-6" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;" value="mostrarMensaje(&quot;Evaluación&lt;div&gt;guardada localmente...&quot;)&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="340" y="320" as="sourcePoint" />
+            <mxPoint x="110" y="320" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt3-7" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontStyle=2;" value="El dispositivo recupera la señal de red" vertex="1">
+          <mxGeometry height="26" width="800" x="70" y="356" as="geometry" />
+        </mxCell>
+        <mxCell id="cu3-alt3-8" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;" value="detectarConexion()">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="385" y="412" />
+              <mxPoint x="385" y="436" />
+            </Array>
+            <mxPoint x="340" y="412" as="sourcePoint" />
+            <mxPoint x="340" y="436" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt3-9" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" value="POST /retroalimentaciones/ (JSON pendiente)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="340" y="468" as="sourcePoint" />
+            <mxPoint x="590" y="468" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt3-10" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" value="INSERT INTO retroalimentacion">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="590" y="516" as="sourcePoint" />
+            <mxPoint x="830" y="516" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt3-11" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;" value="confirmación (id_retro)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="830" y="564" as="sourcePoint" />
+            <mxPoint x="590" y="564" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt3-12" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;" value="HTTP 201 Created">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="590" y="612" as="sourcePoint" />
+            <mxPoint x="340" y="612" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt3-13" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;" value="marcarComoSincronizado()">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="385" y="660" />
+              <mxPoint x="385" y="684" />
+            </Array>
+            <mxPoint x="340" y="660" as="sourcePoint" />
+            <mxPoint x="340" y="684" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,68 @@
+<mxfile host="app.diagrams.net">
+  <diagram id="sqYYwtPl8uULOyfdHYkq" name="Página-1">
+    <mxGraphModel dx="1100" dy="608" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1000" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="cu3-alt1-11" parent="1" style="shape=umlLifeline;participant=umlActor;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=60;verticalAlign=top;" value="&lt;div&gt;&lt;br&gt;&lt;/div&gt;Agricultor" vertex="1">
+          <mxGeometry height="434" width="40" x="90" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cu3-alt1-12" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=44;fillColor=#dae8fc;strokeColor=#6c8ebf;" value=":PWA_Cliente" vertex="1">
+          <mxGeometry height="434" width="130" x="275" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cu3-alt1-13" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=44;fillColor=#dae8fc;strokeColor=#6c8ebf;" value=":AGROPREDIX-WEB&lt;br&gt;(Django)" vertex="1">
+          <mxGeometry height="434" width="130" x="525" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cu3-alt1-14" parent="1" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=0;collapsible=0;recursiveResize=0;outlineConnect=0;size=44;fillColor=#dae8fc;strokeColor=#6c8ebf;" value=":AGROPREDIX-DATA&lt;br&gt;(PostgreSQL)" vertex="1">
+          <mxGeometry height="434" width="130" x="765" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="cu3-alt1-3" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" value="aplicarFiltro(parcela, estado = pendiente)">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="110" y="160" as="sourcePoint" />
+            <mxPoint x="340" y="160" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt1-4" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" value="GET /recomendaciones/?parcela={id}&lt;div&gt;&amp;amp;estado=pendiente&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="340" y="208" as="sourcePoint" />
+            <mxPoint x="590" y="208" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt1-5" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=block;curved=0;rounded=0;" value="SELECT recomendacion WHERE&lt;div&gt;id_parcela = :id AND sin retroalimentación&lt;/div&gt;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="590" y="256" as="sourcePoint" />
+            <mxPoint x="830" y="256" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt1-6" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;" value="recomendaciones_filtradas">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="830" y="304" as="sourcePoint" />
+            <mxPoint x="590" y="304" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt1-7" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;" value="HTTP 200 OK">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="590" y="352" as="sourcePoint" />
+            <mxPoint x="340" y="352" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt1-8" edge="1" parent="1" style="edgeStyle=orthogonalEdgeStyle;html=1;align=left;spacingLeft=2;endArrow=block;rounded=0;" value="actualizarLista()">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="385" y="400" />
+              <mxPoint x="385" y="424" />
+            </Array>
+            <mxPoint x="340" y="400" as="sourcePoint" />
+            <mxPoint x="340" y="424" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="cu3-alt1-9" edge="1" parent="1" style="html=1;verticalAlign=bottom;endArrow=open;dashed=1;endSize=8;curved=0;rounded=0;" value="mostrarListaFiltrada()">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="340" y="456" as="sourcePoint" />
+            <mxPoint x="110" y="456" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
