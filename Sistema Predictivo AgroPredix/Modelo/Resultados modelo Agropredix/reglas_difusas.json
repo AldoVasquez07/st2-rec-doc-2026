@@ -1,0 +1,173 @@
+[
+ {
+  "regla": "SI zona es alta Y zona_cultivo es media Y ventana es cercana Y escala es mediana ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es alta Y zona_cultivo es media Y ventana es fuera Y escala es mediana ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es alta Y zona_cultivo es alta Y ventana es en_epoca Y escala es mediana ENTONCES rendimiento es alto"
+ },
+ {
+  "regla": "SI zona es alta Y zona_cultivo es media Y ventana es en_epoca Y escala es mediana ENTONCES rendimiento es alto"
+ },
+ {
+  "regla": "SI zona es alta Y zona_cultivo es alta Y ventana es fuera Y escala es mediana ENTONCES rendimiento es alto"
+ },
+ {
+  "regla": "SI zona es alta Y zona_cultivo es alta Y ventana es fuera Y escala es pequena ENTONCES rendimiento es alto"
+ },
+ {
+  "regla": "SI zona es alta Y zona_cultivo es alta Y ventana es cercana Y escala es pequena ENTONCES rendimiento es alto"
+ },
+ {
+  "regla": "SI zona es alta Y zona_cultivo es media Y ventana es cercana Y escala es pequena ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es alta Y zona_cultivo es alta Y ventana es cercana Y escala es mediana ENTONCES rendimiento es alto"
+ },
+ {
+  "regla": "SI zona es alta Y zona_cultivo es media Y ventana es en_epoca Y escala es grande ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es alta Y zona_cultivo es media Y ventana es cercana Y escala es grande ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es alta Y zona_cultivo es alta Y ventana es cercana Y escala es grande ENTONCES rendimiento es alto"
+ },
+ {
+  "regla": "SI zona es alta Y zona_cultivo es alta Y ventana es en_epoca Y escala es grande ENTONCES rendimiento es alto"
+ },
+ {
+  "regla": "SI zona es alta Y zona_cultivo es alta Y ventana es fuera Y escala es grande ENTONCES rendimiento es alto"
+ },
+ {
+  "regla": "SI zona es alta Y zona_cultivo es media Y ventana es en_epoca Y escala es pequena ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es alta Y zona_cultivo es alta Y ventana es en_epoca Y escala es pequena ENTONCES rendimiento es alto"
+ },
+ {
+  "regla": "SI zona es alta Y zona_cultivo es media Y ventana es fuera Y escala es grande ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es media Y zona_cultivo es media Y ventana es en_epoca Y escala es grande ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es media Y zona_cultivo es media Y ventana es cercana Y escala es mediana ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es media Y zona_cultivo es media Y ventana es en_epoca Y escala es mediana ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es media Y zona_cultivo es baja Y ventana es en_epoca Y escala es grande ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es media Y zona_cultivo es alta Y ventana es cercana Y escala es mediana ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es media Y zona_cultivo es media Y ventana es cercana Y escala es pequena ENTONCES rendimiento es alto"
+ },
+ {
+  "regla": "SI zona es media Y zona_cultivo es baja Y ventana es en_epoca Y escala es mediana ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es media Y zona_cultivo es baja Y ventana es cercana Y escala es pequena ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es media Y zona_cultivo es alta Y ventana es en_epoca Y escala es mediana ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es media Y zona_cultivo es media Y ventana es cercana Y escala es grande ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es media Y zona_cultivo es baja Y ventana es cercana Y escala es mediana ENTONCES rendimiento es bajo"
+ },
+ {
+  "regla": "SI zona es media Y zona_cultivo es media Y ventana es fuera Y escala es grande ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es media Y zona_cultivo es media Y ventana es en_epoca Y escala es pequena ENTONCES rendimiento es bajo"
+ },
+ {
+  "regla": "SI zona es media Y zona_cultivo es baja Y ventana es en_epoca Y escala es pequena ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es baja Y zona_cultivo es media Y ventana es cercana Y escala es pequena ENTONCES rendimiento es alto"
+ },
+ {
+  "regla": "SI zona es baja Y zona_cultivo es baja Y ventana es en_epoca Y escala es pequena ENTONCES rendimiento es bajo"
+ },
+ {
+  "regla": "SI zona es baja Y zona_cultivo es baja Y ventana es cercana Y escala es pequena ENTONCES rendimiento es bajo"
+ },
+ {
+  "regla": "SI zona es baja Y zona_cultivo es baja Y ventana es cercana Y escala es mediana ENTONCES rendimiento es bajo"
+ },
+ {
+  "regla": "SI zona es baja Y zona_cultivo es baja Y ventana es cercana Y escala es grande ENTONCES rendimiento es bajo"
+ },
+ {
+  "regla": "SI zona es baja Y zona_cultivo es media Y ventana es en_epoca Y escala es pequena ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es baja Y zona_cultivo es media Y ventana es cercana Y escala es grande ENTONCES rendimiento es alto"
+ },
+ {
+  "regla": "SI zona es baja Y zona_cultivo es media Y ventana es en_epoca Y escala es grande ENTONCES rendimiento es alto"
+ },
+ {
+  "regla": "SI zona es baja Y zona_cultivo es media Y ventana es en_epoca Y escala es mediana ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es baja Y zona_cultivo es media Y ventana es cercana Y escala es mediana ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es baja Y zona_cultivo es baja Y ventana es en_epoca Y escala es mediana ENTONCES rendimiento es bajo"
+ },
+ {
+  "regla": "SI zona es media Y zona_cultivo es alta Y ventana es en_epoca Y escala es grande ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es media Y zona_cultivo es media Y ventana es fuera Y escala es pequena ENTONCES rendimiento es alto"
+ },
+ {
+  "regla": "SI zona es media Y zona_cultivo es alta Y ventana es cercana Y escala es grande ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es media Y zona_cultivo es media Y ventana es fuera Y escala es mediana ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es media Y zona_cultivo es baja Y ventana es fuera Y escala es mediana ENTONCES rendimiento es bajo"
+ },
+ {
+  "regla": "SI zona es media Y zona_cultivo es baja Y ventana es cercana Y escala es grande ENTONCES rendimiento es bajo"
+ },
+ {
+  "regla": "SI zona es baja Y zona_cultivo es baja Y ventana es fuera Y escala es mediana ENTONCES rendimiento es bajo"
+ },
+ {
+  "regla": "SI zona es baja Y zona_cultivo es baja Y ventana es en_epoca Y escala es grande ENTONCES rendimiento es alto"
+ },
+ {
+  "regla": "SI zona es baja Y zona_cultivo es baja Y ventana es fuera Y escala es grande ENTONCES rendimiento es bajo"
+ },
+ {
+  "regla": "SI zona es baja Y zona_cultivo es baja Y ventana es fuera Y escala es pequena ENTONCES rendimiento es bajo"
+ },
+ {
+  "regla": "SI zona es baja Y zona_cultivo es media Y ventana es fuera Y escala es mediana ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es baja Y zona_cultivo es media Y ventana es fuera Y escala es grande ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es baja Y zona_cultivo es media Y ventana es fuera Y escala es pequena ENTONCES rendimiento es medio"
+ },
+ {
+  "regla": "SI zona es baja Y zona_cultivo es alta Y ventana es cercana Y escala es pequena ENTONCES rendimiento es alto"
+ },
+ {
+  "regla": "SI zona es baja Y zona_cultivo es alta Y ventana es en_epoca Y escala es grande ENTONCES rendimiento es alto"
+ }
+]
