@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Cambiar contraseña · AgroPredix{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-md-5">
+  <div class="card shadow-sm"><div class="card-body p-4">
+    <h4 class="mb-3">Cambiar mi contraseña</h4>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      {% include 'includes/_campo.html' with campo=form.old_password %}
+      {% include 'includes/_campo.html' with campo=form.new_password1 %}
+      {% include 'includes/_campo.html' with campo=form.new_password2 %}
+      <button class="btn btn-success">Cambiar contraseña</button>
+      <a class="btn btn-link" href="{% url 'usuarios:perfil' %}">Cancelar</a>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}

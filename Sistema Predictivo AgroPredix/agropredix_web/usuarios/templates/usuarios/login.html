@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Ingresar · AgroPredix{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-md-5">
+  <div class="card shadow-sm"><div class="card-body p-4">
+    <h4 class="mb-3">Ingresar</h4>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      {% include 'includes/_campo.html' with campo=form.username %}
+      {% include 'includes/_campo.html' with campo=form.password %}
+      <input type="hidden" name="next" value="{{ next }}">
+      <button class="btn btn-success w-100">Ingresar</button>
+    </form>
+    <p class="mt-3 mb-0 text-center">¿No tiene cuenta? <a href="{% url 'usuarios:registro' %}">Cree una aquí</a></p>
+  </div></div>
+</div></div>
+{% endblock %}

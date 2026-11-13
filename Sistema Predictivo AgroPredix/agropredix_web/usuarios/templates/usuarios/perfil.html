@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block title %}Mi perfil · AgroPredix{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-md-6">
+  <div class="card shadow-sm"><div class="card-body p-4">
+    <h4 class="mb-3">Mis datos</h4>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      {% include 'includes/_campo.html' with campo=form.nombre %}
+      {% include 'includes/_campo.html' with campo=form.celular %}
+      {% include 'includes/_campo.html' with campo=form.correo %}
+      <button class="btn btn-success">Guardar cambios</button>
+      <a class="btn btn-outline-secondary" href="{% url 'usuarios:cambiar_clave' %}">Cambiar mi contraseña</a>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Hola, {{ user.get_short_name }}</h2>
+<p class="lead">Aquí podrá registrar sus parcelas y, más adelante, recibir recomendaciones de siembra.</p>
+{% if parcelas %}
+  <h5 class="mt-4">Sus parcelas</h5>
+  <ul class="list-group mb-3">
+    {% for p in parcelas %}
+      <li class="list-group-item">{{ p.nombre }} <span class="text-muted">· {{ p.distrito.nombre }} · {{ p.area_ha }} ha</span></li>
+    {% endfor %}
+  </ul>
+  <a class="btn btn-success" href="{% url 'parcelas:lista' %}">Ver todas mis parcelas</a>
+{% else %}
+  <a class="btn btn-success btn-lg" href="{% url 'parcelas:crear' %}">Registrar mi primera parcela</a>
+{% endif %}
+{% endblock %}

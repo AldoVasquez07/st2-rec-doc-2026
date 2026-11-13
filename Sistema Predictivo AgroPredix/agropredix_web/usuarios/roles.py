@@ -1,0 +1,9 @@
+AGRICULTOR = 'AGRICULTOR'
+ESPECIALISTA = 'ESPECIALISTA'
+ADMINISTRADOR = 'ADMINISTRADOR'
+
+ROLES = [
+    (AGRICULTOR, 'Agricultor'),
+    (ESPECIALISTA, 'Especialista agrónomo'),
+    (ADMINISTRADOR, 'Administrador'),
+]
