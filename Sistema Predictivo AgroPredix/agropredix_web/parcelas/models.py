@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-
+from cultivos.models import Cultivo
 
 class Distrito(models.Model):
     ubigeo = models.CharField(max_length=6, unique=True)   # '040101' (= COD_UBIGEO 40101 del SISAGRI)
@@ -37,3 +37,30 @@ class Parcela(models.Model):
 
     def __str__(self):
         return f'{self.nombre} - {self.distrito.nombre}'
+    
+    
+
+
+class HistorialCampana(models.Model):
+    class Resultado(models.TextChoices):
+        BUENO = 'bueno', 'Bueno'
+        REGULAR = 'regular', 'Regular'
+        MALO = 'malo', 'Malo'
+
+    parcela = models.ForeignKey(Parcela, on_delete=models.CASCADE, related_name='historial')
+    cultivo = models.ForeignKey(Cultivo, on_delete=models.PROTECT, related_name='historial')
+    campana_ini = models.PositiveSmallIntegerField()   # 2024 = campaña 2024-2025
+    resultado = models.CharField(max_length=10, choices=Resultado.choices)
+    fecha_registro = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-campana_ini', 'cultivo__nombre']
+        constraints = [models.UniqueConstraint(fields=['parcela', 'cultivo', 'campana_ini'],
+                                               name='historial_unico_por_campana')]
+
+    @property
+    def campana(self):
+        return f'{self.campana_ini}-{self.campana_ini + 1}'
+
+    def __str__(self):
+        return f'{self.parcela.nombre}: {self.cultivo.nombre} ({self.campana})'

@@ -1,9 +1,12 @@
+from datetime import date
+
 from django import forms
 from django.core.exceptions import ValidationError
 
+from cultivos.models import Cultivo
 from usuarios.forms import EstiloBootstrapMixin
 
-from .models import Distrito, Parcela
+from .models import Distrito, HistorialCampana, Parcela
 
 
 class ParcelaForm(EstiloBootstrapMixin, forms.ModelForm):
@@ -38,3 +41,41 @@ class ParcelaForm(EstiloBootstrapMixin, forms.ModelForm):
         if repetidas.exists():
             raise ValidationError('Ya tiene una parcela con ese nombre.')
         return nombre
+    
+    
+
+
+def _campanas_anteriores():
+    hoy = date.today()
+    actual = hoy.year if hoy.month >= 8 else hoy.year - 1   # la campaña agrícola empieza en agosto
+    return [(a, f'{a}-{a + 1}') for a in range(actual - 1, actual - 11, -1)]
+
+
+class HistorialCampanaForm(EstiloBootstrapMixin, forms.ModelForm):
+    campana_ini = forms.TypedChoiceField(label='Campaña', coerce=int, choices=[])
+
+    class Meta:
+        model = HistorialCampana
+        fields = ['campana_ini', 'cultivo', 'resultado']
+        labels = {'cultivo': '¿Qué sembró?', 'resultado': '¿Cómo le fue?'}
+
+    def __init__(self, *args, parcela=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.parcela = parcela
+        self.fields['campana_ini'].choices = [('', 'Elija la campaña')] + _campanas_anteriores()
+        self.fields['cultivo'].queryset = Cultivo.objects.filter(activo=True)
+        self.fields['cultivo'].empty_label = 'Elija el cultivo'
+        self.fields['resultado'].choices = [('', 'Elija una opción')] + list(
+            HistorialCampana.Resultado.choices)
+
+    def clean(self):
+        datos = super().clean()
+        campana, cultivo = datos.get('campana_ini'), datos.get('cultivo')
+        if campana and cultivo:
+            repetidos = HistorialCampana.objects.filter(
+                parcela=self.parcela, campana_ini=campana, cultivo=cultivo)
+            if self.instance.pk:
+                repetidos = repetidos.exclude(pk=self.instance.pk)
+            if repetidos.exists():
+                raise ValidationError('Ya registró ese cultivo en esa campaña.')
+        return datos

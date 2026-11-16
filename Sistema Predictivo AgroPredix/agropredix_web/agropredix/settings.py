@@ -16,6 +16,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'usuarios',
     'parcelas',
+    'cultivos',
+    'recomendaciones',
 ]
 
 MIDDLEWARE = [
@@ -83,5 +85,8 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+GOOGLE_MAPS_API_KEY = config('GOOGLE_MAPS_API_KEY', default='')
+GOOGLE_MAPS_MAP_ID = config('GOOGLE_MAPS_MAP_ID', default='DEMO_MAP_ID')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

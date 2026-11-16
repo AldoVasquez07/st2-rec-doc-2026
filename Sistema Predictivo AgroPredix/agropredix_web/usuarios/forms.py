@@ -86,6 +86,8 @@ class RegistroForm(EstiloBootstrapMixin, forms.Form):
 
 
 class PerfilForm(EstiloBootstrapMixin, forms.ModelForm):
+    celular = forms.CharField(label='Celular', required=False)   # sin max_length: se normaliza en clean_celular
+
     class Meta:
         model = Usuario
         fields = ['nombre', 'correo', 'celular']

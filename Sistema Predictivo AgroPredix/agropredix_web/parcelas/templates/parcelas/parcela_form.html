@@ -1,8 +1,5 @@
 {% extends 'base.html' %}
 {% block title %}Parcela · AgroPredix{% endblock %}
-{% block extra_head %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-{% endblock %}
 {% block content %}
 <h3>{% if object %}Editar parcela{% else %}Nueva parcela{% endif %}</h3>
 <form method="post" novalidate class="card shadow-sm p-4">
@@ -15,6 +12,7 @@
     <div class="col-md-6">{% include 'includes/_campo.html' with campo=form.referencia %}</div>
   </div>
   <p class="mb-1 fw-semibold">Toque el mapa donde está su parcela</p>
+  <p class="small text-muted mb-2">Puede acercar el mapa y, una vez puesto el marcador, arrastrarlo para ajustarlo.</p>
   <div id="mapa" style="height:380px" class="rounded border mb-3"></div>
   <div class="row">
     <div class="col-md-6">{% include 'includes/_campo.html' with campo=form.latitud %}</div>
@@ -26,32 +24,84 @@
   </div>
 </form>
 {{ centros|json_script:"centros-data" }}
+{{ google_maps|json_script:"maps-config" }}
 {% endblock %}
 {% block extra_js %}
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+const CFG = JSON.parse(document.getElementById('maps-config').textContent);
 const centros = JSON.parse(document.getElementById('centros-data').textContent);
+const divMapa = document.getElementById('mapa');
 const inLat = document.getElementById('id_latitud');
 const inLon = document.getElementById('id_longitud');
 const selDistrito = document.getElementById('id_distrito');
 const lat0 = parseFloat(inLat.value), lon0 = parseFloat(inLon.value);
 const hayPunto = !isNaN(lat0) && !isNaN(lon0);
+// Mismos límites que los validadores de Parcela (caja del departamento de Arequipa)
+const LIMITES = {north: -14.4, south: -17.7, west: -75.2, east: -70.7};
 
-const mapa = L.map('mapa').setView(hayPunto ? [lat0, lon0] : [-16.4, -71.53], hayPunto ? 15 : 9);
-L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-  {maxZoom: 19, attribution: '© OpenStreetMap'}).addTo(mapa);
-
-let marcador = hayPunto ? L.marker([lat0, lon0]).addTo(mapa) : null;
-function marcar(lat, lon) {
-  inLat.value = lat.toFixed(6);
-  inLon.value = lon.toFixed(6);
-  if (marcador) { marcador.setLatLng([lat, lon]); }
-  else { marcador = L.marker([lat, lon]).addTo(mapa); }
+function mostrarError(texto) {
+  divMapa.innerHTML = '<div class="alert alert-warning m-3"></div>';
+  divMapa.firstChild.textContent = texto;
 }
-mapa.on('click', e => marcar(e.latlng.lat, e.latlng.lng));
-selDistrito.addEventListener('change', () => {
-  const c = centros[selDistrito.value];
-  if (c) mapa.setView(c, 13);
-});
+// Google llama a esta función si rechaza la clave (restricción mal puesta, API sin habilitar, etc.)
+window.gm_authFailure = () => mostrarError('No se pudo cargar el mapa de Google. Revise la clave de API.');
+
+const num = v => (typeof v === 'function' ? v() : v);
+
+async function iniciar() {
+  try {
+    const [{ Map }, { AdvancedMarkerElement }] = await Promise.all([
+      google.maps.importLibrary('maps'), google.maps.importLibrary('marker')]);
+
+    const mapa = new Map(divMapa, {
+      center: hayPunto ? {lat: lat0, lng: lon0} : {lat: -16.4, lng: -71.53},
+      zoom: hayPunto ? 16 : 9,
+      mapId: CFG.mapId,
+      mapTypeId: 'hybrid',               // satélite con nombres: facilita ubicar la chacra
+      restriction: {latLngBounds: LIMITES, strictBounds: false},
+      streetViewControl: false,
+      gestureHandling: 'greedy',         // en el celular se mueve con un dedo
+    });
+
+    let marcador = null;
+    function marcar(lat, lng) {
+      inLat.value = lat.toFixed(6);
+      inLon.value = lng.toFixed(6);
+      if (marcador) { marcador.position = {lat, lng}; return; }
+      marcador = new AdvancedMarkerElement({map: mapa, position: {lat, lng},
+                                            gmpDraggable: true, title: 'Su parcela'});
+      marcador.addListener('dragend', () => {
+        const p = marcador.position;
+        marcar(num(p.lat), num(p.lng));
+      });
+    }
+    if (hayPunto) marcar(lat0, lon0);
+
+    mapa.addListener('click', e => {
+      if (e.placeId) e.stop();           // evita el globo de información de negocios/lugares
+      marcar(e.latLng.lat(), e.latLng.lng());
+    });
+    selDistrito.addEventListener('change', () => {
+      const c = centros[selDistrito.value];
+      if (c) { mapa.setCenter({lat: c[0], lng: c[1]}); mapa.setZoom(13); }
+    });
+  } catch (err) {
+    console.error(err);
+    mostrarError('No se pudo cargar el mapa. Revise su conexión e inténtelo de nuevo.');
+  }
+}
+
+if (!CFG.key) {
+  mostrarError('Falta configurar la clave de Google Maps (GOOGLE_MAPS_API_KEY).');
+} else {
+  // Cargador oficial de Google (importación dinámica de bibliotecas)
+  (g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})({
+    key: CFG.key,
+    v: "weekly",
+    language: "es",
+    region: "PE",
+  });
+  iniciar();
+}
 </script>
 {% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Recomendación · {{ parcela.nombre }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">¿Qué sembrar en «{{ parcela.nombre }}»?</h3>
+  <a class="btn btn-link" href="{% url 'parcelas:lista' %}">← Mis parcelas</a>
+</div>
+
+{% if cubierto %}
+  <form method="post" class="card shadow-sm p-3 mb-4">
+    {% csrf_token %}
+    <p class="mb-2">Parcela en <strong>{{ parcela.distrito.nombre }}</strong>. El sistema usa el clima y el suelo de su zona y el
+      último cultivo que registró en su <a href="{% url 'parcelas:historial' parcela.pk %}">historial</a>.</p>
+    <div class="row align-items-end">
+      <div class="col-md-5">
+        <label for="mes" class="form-label">¿En qué mes piensa sembrar?</label>
+        <select name="mes" id="mes" class="form-select">
+          {% for n, nombre in meses %}<option value="{{ n }}" {% if n == mes_actual %}selected{% endif %}>{{ nombre }}</option>{% endfor %}
+        </select>
+      </div>
+      <div class="col-md-4 mt-3 mt-md-0"><button class="btn btn-success">Ver recomendación</button></div>
+    </div>
+  </form>
+
+  {% if anteriores %}
+    <h5>Recomendaciones anteriores</h5>
+    <ul class="list-group">
+      {% for r in anteriores %}
+        <li class="list-group-item d-flex justify-content-between">
+          <span>{{ r.fecha|date:"d/m/Y H:i" }} · siembra en el mes {{ r.mes }}</span>
+          <a href="{% url 'recomendaciones:detalle' r.pk %}">Ver</a>
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% else %}
+  <div class="alert alert-warning">
+    Por ahora las recomendaciones están disponibles para los distritos de
+    {{ distritos_cubiertos|join:", " }}. Su parcela está en {{ parcela.distrito.nombre }}.
+    Estamos ampliando la cobertura.
+  </div>
+{% endif %}
+{% endblock %}

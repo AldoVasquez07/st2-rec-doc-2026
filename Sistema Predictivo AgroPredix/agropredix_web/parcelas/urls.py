@@ -9,4 +9,6 @@ urlpatterns = [
     path('nueva/', views.ParcelaCreateView.as_view(), name='crear'),
     path('<int:pk>/editar/', views.ParcelaUpdateView.as_view(), name='editar'),
     path('<int:pk>/eliminar/', views.ParcelaDeleteView.as_view(), name='eliminar'),
+    path('<int:pk>/historial/', views.historial, name='historial'),
+    path('<int:pk>/historial/<int:hpk>/eliminar/', views.historial_eliminar, name='historial_eliminar'),
 ]

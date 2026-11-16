@@ -13,6 +13,8 @@
       {% if p.referencia %}<small class="text-muted">{{ p.referencia }}</small>{% endif %}
     </div>
     <div>
+      <a class="btn btn-outline-success btn-sm" href="{% url 'parcelas:historial' p.pk %}">Historial</a>
+      <a class="btn btn-success btn-sm" href="{% url 'recomendaciones:generar' p.pk %}">¿Qué sembrar?</a>
       <a class="btn btn-outline-primary btn-sm" href="{% url 'parcelas:editar' p.pk %}">Editar</a>
       <a class="btn btn-outline-danger btn-sm" href="{% url 'parcelas:eliminar' p.pk %}">Eliminar</a>
     </div>
