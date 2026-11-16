@@ -13,7 +13,7 @@ MESES = [(i, n.capitalize()) for i, n in enumerate(
      'setiembre', 'octubre', 'noviembre', 'diciembre'], 1)]
 
 CAMPOS_GUARDADOS = ('puesto', 'cultivo', 'idoneidad', 'certeza_pct', 'idoneidad_ajustada',
-                    'nivel', 'explicacion', 'explicacion_detallada')
+                    'nivel', 'influencia', 'explicacion', 'explicacion_detallada')
 
 
 def _mes_valido(texto):

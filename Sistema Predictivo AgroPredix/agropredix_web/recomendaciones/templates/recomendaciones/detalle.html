@@ -24,6 +24,28 @@
     </div>
     <div class="progress my-2" style="height: 10px;"><div class="progress-bar bg-success" style="width: {{ r.idoneidad|floatformat:0 }}%"></div></div>
     <div class="small text-muted">Idoneidad {{ r.idoneidad|floatformat:0 }}/100 · Certeza {{ r.certeza_pct|floatformat:0 }}%</div>
+    {% if r.influencia %}
+    <details class="mt-2" {% if forloop.first %}open{% endif %}>
+      <summary class="small">Qué pesó más en esta recomendación</summary>
+      <div class="mt-2" role="img" aria-label="Influencia de cada factor en la recomendación de {{ r.cultivo }}">
+        {% for f in r.influencia %}
+          <div class="d-flex align-items-center small mb-1">
+            <div style="flex: 0 0 40%">{{ f.etiqueta }}</div>
+            <div class="progress flex-grow-1 me-2" style="height: 12px;">
+              <div class="progress-bar {% if f.ayuda %}bg-success{% else %}bg-danger{% endif %}"
+                   style="width: {{ f.pct }}%"></div>
+            </div>
+            <div class="text-end" style="flex: 0 0 105px">
+              {% if f.pct == 0 %}<span class="text-muted">sin efecto</span>
+              {% elif f.ayuda %}<span class="text-success">{{ f.pct }}% ayuda</span>
+              {% else %}<span class="text-danger">{{ f.pct }}% perjudica</span>{% endif %}
+            </div>
+          </div>
+        {% endfor %}
+        <div class="small text-muted mt-1">Verde: el factor favorece al cultivo · Rojo: lo desfavorece.</div>
+      </div>
+    </details>
+    {% endif %}
     <details class="mt-2"><summary class="small">¿Por qué?</summary>
       <div class="small mt-2">{{ r.explicacion|linebreaksbr }}</div>
     </details>
