@@ -7,6 +7,9 @@ from usuarios.base_pruebas import PruebaBase
 from . import servicio
 from .models import Recomendacion
 
+from datetime import date
+from parcelas.models import AnalisisSuelo, HistorialCampana
+
 
 def distrito_tiabaya():
     return crear_distrito(ubigeo='040123', nombre='Tiabaya')
@@ -44,6 +47,52 @@ class ServicioTests(PruebaBase):
         HistorialCampana.objects.create(parcela=parcela, cultivo=raro, campana_ini=2025, resultado='bueno')
         datos = servicio.recomendar_para_parcela(parcela, 11)
         self.assertIsNone(datos['antecesor'])
+
+
+class SueloTests(PruebaBase):
+    """RF-0004: estimación por zona y análisis de laboratorio opcional."""
+
+    def setUp(self):
+        self.usuario = self.crear_usuario()
+        self.parcela = crear_parcela(self.usuario, distrito_tiabaya())
+
+    def test_sin_analisis_usa_la_estimacion_de_la_zona(self):          # CP-007
+        s = servicio.recomendar_para_parcela(self.parcela, 11)['suelo']
+        self.assertFalse(s['ph']['medido'])
+        self.assertFalse(s['arcilla']['medido'])
+        self.assertIsNotNone(s['ph']['valor'])
+        self.assertEqual(s['fecha'], '')
+
+    def test_el_analisis_reemplaza_la_estimacion(self):                # CP-008
+        AnalisisSuelo.objects.create(parcela=self.parcela, fecha=date(2026, 3, 10), ph=5.2, arcilla=30)
+        s = servicio.recomendar_para_parcela(self.parcela, 11)['suelo']
+        self.assertEqual((s['ph']['valor'], s['ph']['medido']), (5.2, True))
+        self.assertEqual((s['arcilla']['valor'], s['arcilla']['medido']), (30.0, True))
+        self.assertEqual(s['fecha'], '10/03/2026')
+
+    def test_el_analisis_cambia_el_resultado(self):
+        sin = servicio.recomendar_para_parcela(self.parcela, 11)['ranking']
+        AnalisisSuelo.objects.create(parcela=self.parcela, fecha=date(2026, 3, 10), ph=5.2, arcilla=30)
+        con = servicio.recomendar_para_parcela(self.parcela, 11)['ranking']
+        self.assertNotEqual({r['cultivo']: r['idoneidad'] for r in sin},
+                            {r['cultivo']: r['idoneidad'] for r in con})
+
+    def test_analisis_parcial_se_completa_con_la_zona(self):
+        AnalisisSuelo.objects.create(parcela=self.parcela, fecha=date(2026, 3, 10), ph=5.2)
+        s = servicio.recomendar_para_parcela(self.parcela, 11)['suelo']
+        self.assertTrue(s['ph']['medido'])
+        self.assertFalse(s['arcilla']['medido'])
+        self.assertIsNotNone(s['arcilla']['valor'])
+
+    def test_usa_siempre_el_analisis_mas_reciente(self):
+        AnalisisSuelo.objects.create(parcela=self.parcela, fecha=date(2023, 3, 10), ph=5.0)
+        AnalisisSuelo.objects.create(parcela=self.parcela, fecha=date(2026, 3, 10), ph=7.0)
+        self.assertEqual(servicio.recomendar_para_parcela(self.parcela, 11)['suelo']['ph']['valor'], 7.0)
+
+    def test_el_analisis_de_otra_parcela_no_se_mezcla(self):
+        otra = crear_parcela(self.usuario, self.parcela.distrito, nombre='Otra')
+        AnalisisSuelo.objects.create(parcela=otra, fecha=date(2026, 3, 10), ph=5.0)
+        self.assertFalse(servicio.recomendar_para_parcela(self.parcela, 11)['suelo']['ph']['medido'])
 
 
 class VistasTests(PruebaBase):
@@ -105,6 +154,27 @@ class VistasTests(PruebaBase):
         r = self.client.get(reverse('recomendaciones:detalle', args=[rec.pk]))
         self.assertEqual(r.status_code, 200)
         self.assertNotContains(r, 'Qué pesó más')
+        
+    def test_detalle_indica_el_origen_del_suelo(self):
+        url = reverse('recomendaciones:generar', args=[self.parcela.pk])
+        self.client.post(url, {'mes': '11'})
+        r = self.client.get(reverse('recomendaciones:detalle', args=[Recomendacion.objects.get().pk]))
+        self.assertContains(r, 'estimado para su zona')
+        AnalisisSuelo.objects.create(parcela=self.parcela, fecha=date(2026, 3, 10), ph=5.2, arcilla=30)
+        self.client.post(url, {'mes': '11'})
+        r = self.client.get(reverse('recomendaciones:detalle', args=[Recomendacion.objects.first().pk]))
+        self.assertContains(r, 'de su análisis del 10/03/2026')
+
+    def test_recomendacion_antigua_sin_datos_de_suelo_no_rompe(self):
+        rec = Recomendacion.objects.create(parcela=self.parcela, mes=11, resultado=[])   # sin campo suelo
+        self.assertEqual(self.client.get(reverse('recomendaciones:detalle', args=[rec.pk])).status_code, 200)
+
+    def test_formulario_invita_a_agregar_analisis(self):
+        r = self.client.get(reverse('recomendaciones:generar', args=[self.parcela.pk]))
+        self.assertContains(r, 'agregarlo aquí')
+        AnalisisSuelo.objects.create(parcela=self.parcela, fecha=date(2026, 3, 10), ph=5.2)
+        r = self.client.get(reverse('recomendaciones:generar', args=[self.parcela.pk]))
+        self.assertContains(r, 'Se usará su análisis de suelo del 10/03/2026')
 
 
 class InfluenciaTests(PruebaBase):
@@ -130,3 +200,54 @@ class InfluenciaTests(PruebaBase):
         papa = next(r for r in ranking if r['cultivo'].lower().startswith('papa'))
         ph = next(f for f in papa['influencia'] if f['factor'] == 'ph')
         self.assertFalse(ph['ayuda'])
+        
+        
+class ListaTests(PruebaBase):
+    def setUp(self):
+        self.usuario = self.crear_usuario()
+        self.parcela = crear_parcela(self.usuario, distrito_tiabaya())
+        self.client.force_login(self.usuario)
+        self.url = reverse('recomendaciones:lista')
+
+    def _crear(self, mes=11, parcela=None, cultivo='Maiz Chala'):
+        return Recomendacion.objects.create(parcela=parcela or self.parcela, mes=mes, resultado=[{
+            'puesto': 1, 'cultivo': cultivo, 'idoneidad': 60, 'certeza_pct': 70, 'idoneidad_ajustada': 50,
+            'nivel': 'Media', 'explicacion': 'x', 'explicacion_detallada': 'y'}])
+
+    def test_requiere_login(self):
+        self.client.logout()
+        self.assertEqual(self.client.get(self.url).status_code, 302)
+
+    def test_sin_recomendaciones_orienta_al_usuario(self):
+        self.assertContains(self.client.get(self.url), 'Todavía no pidió ninguna recomendación')
+
+    def test_muestra_parcela_mes_y_mejor_cultivo(self):
+        self._crear(mes=11, cultivo='Arveja Grano Verde')
+        r = self.client.get(self.url)
+        self.assertContains(r, self.parcela.nombre)
+        self.assertContains(r, 'noviembre')
+        self.assertContains(r, 'Arveja Grano Verde')
+
+    def test_solo_muestra_las_propias(self):
+        otro = self.crear_usuario(nombre='Otro', celular='912345678')
+        ajena = crear_parcela(otro, self.parcela.distrito, nombre='Ajena')
+        self._crear(parcela=ajena, cultivo='Papa')
+        self.assertNotContains(self.client.get(self.url), 'Ajena')
+
+    def test_la_mas_reciente_va_primero(self):
+        vieja = self._crear(mes=1)
+        nueva = self._crear(mes=2)
+        enlaces = self.client.get(self.url).content.decode()
+        self.assertLess(enlaces.index(reverse('recomendaciones:detalle', args=[nueva.pk])),
+                        enlaces.index(reverse('recomendaciones:detalle', args=[vieja.pk])))
+
+    def test_limita_a_20_y_marca_10_para_guardar_sin_conexion(self):
+        for _ in range(25):
+            self._crear()
+        html = self.client.get(self.url).content.decode()
+        self.assertEqual(html.count('class="card shadow-sm mb-2 text-decoration-none'), 20)
+        self.assertEqual(html.count('data-pwa-precargar'), 10)
+
+    def test_una_recomendacion_antigua_sin_resultado_no_rompe(self):
+        Recomendacion.objects.create(parcela=self.parcela, mes=3, resultado=[])
+        self.assertEqual(self.client.get(self.url).status_code, 200)

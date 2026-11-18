@@ -9,6 +9,7 @@ class Recomendacion(models.Model):
     mes = models.PositiveSmallIntegerField()                 # mes de siembra consultado (1-12)
     antecesor = models.CharField(max_length=100, blank=True)  # cultivo anterior usado (vacío = sin registrar)
     resultado = models.JSONField()                           # ranking completo con explicaciones
+    suelo = models.JSONField(default=dict, blank=True)       # pH/arcilla usados y si vienen de su análisis
     fecha = models.DateTimeField(auto_now_add=True)
 
     class Meta:

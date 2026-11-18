@@ -2,6 +2,7 @@ from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from cultivos.models import Cultivo
+from django.core.exceptions import ValidationError
 
 class Distrito(models.Model):
     ubigeo = models.CharField(max_length=6, unique=True)   # '040101' (= COD_UBIGEO 40101 del SISAGRI)
@@ -52,6 +53,7 @@ class HistorialCampana(models.Model):
     campana_ini = models.PositiveSmallIntegerField()   # 2024 = campaña 2024-2025
     resultado = models.CharField(max_length=10, choices=Resultado.choices)
     fecha_registro = models.DateTimeField(auto_now_add=True)
+    uuid = models.UUIDField(null=True, blank=True, unique=True, editable=False)
 
     class Meta:
         ordering = ['-campana_ini', 'cultivo__nombre']
@@ -64,3 +66,28 @@ class HistorialCampana(models.Model):
 
     def __str__(self):
         return f'{self.parcela.nombre}: {self.cultivo.nombre} ({self.campana})'
+    
+
+class AnalisisSuelo(models.Model):
+    """Análisis de laboratorio opcional (RF-0004). El motor usa el pH y el % de arcilla."""
+    parcela = models.ForeignKey(Parcela, on_delete=models.CASCADE, related_name='analisis')
+    fecha = models.DateField()                                    # fecha del análisis
+    ph = models.FloatField(null=True, blank=True,
+                           validators=[MinValueValidator(3.0), MaxValueValidator(10.0)])
+    arcilla = models.FloatField(null=True, blank=True,            # % de arcilla de la textura
+                                validators=[MinValueValidator(0), MaxValueValidator(100)])
+    laboratorio = models.CharField(max_length=100, blank=True)
+    fecha_registro = models.DateTimeField(auto_now_add=True)
+    
+    uuid = models.UUIDField(null=True, blank=True, unique=True, editable=False)
+
+    class Meta:
+        ordering = ['-fecha', '-fecha_registro']                  # el primero es el más reciente (el que se usa)
+        verbose_name_plural = 'análisis de suelo'
+
+    def clean(self):
+        if self.ph is None and self.arcilla is None:
+            raise ValidationError('Ingrese al menos el pH o el porcentaje de arcilla.')
+
+    def __str__(self):
+        return f'{self.parcela.nombre}: análisis del {self.fecha:%d/%m/%Y}'

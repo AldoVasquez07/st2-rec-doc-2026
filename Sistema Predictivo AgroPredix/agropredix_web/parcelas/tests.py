@@ -8,16 +8,19 @@ from unittest import mock, skipUnless
 from django.conf import settings
 from django.core.management import call_command
 from django.db import IntegrityError, transaction
-from django.db.models import ProtectedError
-from django.test import SimpleTestCase, override_settings
+from django.db.models import Count, ProtectedError
+from django.test import Client, SimpleTestCase, override_settings
+
 from django.urls import reverse
 
 from cultivos.models import Cultivo
 from usuarios.base_pruebas import PruebaBase
 
 from .forms import _campanas_anteriores
-from .models import Distrito, HistorialCampana, Parcela
+from .models import AnalisisSuelo, Distrito, HistorialCampana, Parcela
 
+import json
+import uuid
 
 # ---------- ayudas ----------
 def crear_distrito(ubigeo='040101', nombre='Arequipa', lat=-16.4, lon=-71.53):
@@ -74,9 +77,15 @@ class CargaDistritosTests(PruebaBase):
         self.assertEqual(Distrito.objects.count(), 2)
 
     @skipUnless(RUTA_DISTRITOS.exists(), 'falta datos/coordenadas_distritos.csv')
-    def test_archivo_real_trae_101_distritos(self):
+    def test_archivo_real_trae_los_109_distritos_de_arequipa(self):
         call_command('cargar_distritos', str(RUTA_DISTRITOS), stdout=StringIO())
-        self.assertEqual(Distrito.objects.count(), 101)
+        self.assertEqual(Distrito.objects.count(), 109)
+        por_provincia = dict(Distrito.objects.values_list('provincia').annotate(n=Count('id')))
+        self.assertEqual(por_provincia, {'Arequipa': 29, 'Camana': 8, 'Caraveli': 13, 'Castilla': 14,
+                                         'Caylloma': 20, 'Condesuyos': 8, 'Islay': 6, 'La Union': 11})
+        self.assertEqual(Distrito.objects.filter(latitud__isnull=True).count(), 0)      # todos centran el mapa
+        for ubigeo in ('040123', '040117', '040124'):                                   # Tiabaya, Sachaca, Uchumayo
+            self.assertTrue(Distrito.objects.filter(ubigeo=ubigeo).exists(), ubigeo)
 
 
 # ---------- SEGURIDAD: aislamiento entre agricultores ----------
@@ -325,3 +334,204 @@ class MapaGoogleTests(PruebaBase):
         r = self.client.get(reverse('parcelas:crear'))
         self.assertEqual(r.status_code, 200)
         self.assertEqual(r.context['google_maps']['key'], '')
+        
+
+# ---------- ANÁLISIS DE SUELO (RF-0004) ----------
+class AnalisisSueloTests(PruebaBase):
+    def setUp(self):
+        self.usuario = self.crear_usuario()
+        self.parcela = crear_parcela(self.usuario, crear_distrito())
+        self.url = reverse('parcelas:suelo', args=[self.parcela.pk])
+        self.client.force_login(self.usuario)
+
+    def _enviar(self, **datos):
+        base = {'fecha': date.today().isoformat(), 'ph': '7.2', 'arcilla': '25', 'laboratorio': ''}
+        base.update(datos)
+        return self.client.post(self.url, base)
+
+    def test_requiere_login(self):
+        self.client.logout()
+        self.assertEqual(self.client.get(self.url).status_code, 302)
+
+    def test_guarda_analisis_completo(self):
+        self.assertRedirects(self._enviar(), self.url)
+        a = AnalisisSuelo.objects.get()
+        self.assertEqual((a.parcela, a.ph, a.arcilla), (self.parcela, 7.2, 25.0))
+
+    def test_alcanza_con_el_ph_solo(self):
+        self._enviar(arcilla='')
+        self.assertIsNone(AnalisisSuelo.objects.get().arcilla)
+
+    def test_rechaza_si_no_trae_ningun_valor(self):
+        r = self._enviar(ph='', arcilla='')
+        self.assertContains(r, 'al menos el pH')
+        self.assertEqual(AnalisisSuelo.objects.count(), 0)
+
+    def test_rechaza_valores_imposibles(self):
+        self._enviar(ph='12')
+        self._enviar(arcilla='140')
+        self._enviar(ph='1.5')
+        self.assertEqual(AnalisisSuelo.objects.count(), 0)
+
+    def test_rechaza_fecha_futura(self):
+        r = self._enviar(fecha=date.today().replace(year=date.today().year + 1).isoformat())
+        self.assertContains(r, 'no puede ser futura')
+        self.assertEqual(AnalisisSuelo.objects.count(), 0)
+
+    def test_el_mas_reciente_aparece_primero(self):
+        AnalisisSuelo.objects.create(parcela=self.parcela, fecha=date(2024, 1, 5), ph=5.0)
+        AnalisisSuelo.objects.create(parcela=self.parcela, fecha=date(2026, 1, 5), ph=7.0)
+        self.assertEqual(self.parcela.analisis.first().ph, 7.0)
+
+    def test_otro_usuario_no_ve_ni_agrega_ni_quita(self):
+        a = AnalisisSuelo.objects.create(parcela=self.parcela, fecha=date(2025, 1, 5), ph=6.5)
+        self.client.logout()
+        otro = self.crear_usuario(nombre='Otro', celular='912345678')
+        self.client.force_login(otro)
+        self.assertEqual(self.client.get(self.url).status_code, 404)
+        self.assertEqual(self.client.post(self.url, {'fecha': date.today().isoformat(), 'ph': '7'}).status_code, 404)
+        borrar = reverse('parcelas:suelo_eliminar', args=[self.parcela.pk, a.pk])
+        self.assertEqual(self.client.post(borrar).status_code, 404)
+        self.assertEqual(AnalisisSuelo.objects.count(), 1)
+
+    def test_quitar_solo_por_post(self):
+        a = AnalisisSuelo.objects.create(parcela=self.parcela, fecha=date(2025, 1, 5), ph=6.5)
+        borrar = reverse('parcelas:suelo_eliminar', args=[self.parcela.pk, a.pk])
+        self.assertEqual(self.client.get(borrar).status_code, 405)
+        self.client.post(borrar)
+        self.assertEqual(AnalisisSuelo.objects.count(), 0)
+
+    def test_se_borra_con_la_parcela(self):
+        AnalisisSuelo.objects.create(parcela=self.parcela, fecha=date(2025, 1, 5), ph=6.5)
+        self.parcela.delete()
+        self.assertEqual(AnalisisSuelo.objects.count(), 0)
+        
+
+# ---------- SINCRONIZACIÓN SIN CONEXIÓN (RF-0015 · CP-016) ----------
+class SincronizacionTests(PruebaBase):
+    def setUp(self):
+        self.usuario = self.crear_usuario()
+        self.parcela = crear_parcela(self.usuario, crear_distrito())
+        self.papa = crear_cultivo('Papa', codigo='1001')
+        self.maiz = crear_cultivo('Maiz', codigo='1002')
+        self.campana = _campanas_anteriores()[0][0]
+        self.url = reverse('parcelas:sincronizar')
+        self.client.force_login(self.usuario)
+
+    def _historial(self, cultivo=None, identificador=None, **extra):
+        return {'tipo': 'historial', 'uuid': str(identificador or uuid.uuid4()), 'parcela': self.parcela.pk,
+                'datos': {'campana_ini': str(self.campana), 'cultivo': str((cultivo or self.papa).pk),
+                          'resultado': 'bueno'}, **extra}
+
+    def _suelo(self, identificador=None, **datos):
+        base = {'fecha': date.today().isoformat(), 'ph': '6.8', 'arcilla': '22', 'laboratorio': ''}
+        base.update(datos)
+        return {'tipo': 'suelo', 'uuid': str(identificador or uuid.uuid4()), 'parcela': self.parcela.pk,
+                'datos': base}
+
+    def _enviar(self, carga, cliente=None):
+        return (cliente or self.client).post(self.url, json.dumps(carga), content_type='application/json')
+
+    # -- lo que debe guardarse
+    def test_guarda_una_campana_con_su_identificador(self):
+        carga = self._historial()
+        r = self._enviar(carga)
+        self.assertEqual((r.status_code, r.json()['estado']), (201, 'ok'))
+        h = HistorialCampana.objects.get()
+        self.assertEqual((h.parcela, h.cultivo, h.campana_ini, h.resultado), (self.parcela, self.papa, self.campana, 'bueno'))
+        self.assertEqual(str(h.uuid), carga['uuid'])
+
+    def test_guarda_un_analisis_de_suelo(self):
+        r = self._enviar(self._suelo())
+        self.assertEqual(r.status_code, 201)
+        a = AnalisisSuelo.objects.get()
+        self.assertEqual((a.ph, a.arcilla), (6.8, 22.0))
+
+    # -- CP-016: sin pérdida y sin duplicados
+    def test_reenviar_el_mismo_registro_no_lo_duplica(self):
+        carga = self._historial()
+        self.assertEqual(self._enviar(carga).status_code, 201)
+        for _ in range(3):                                         # el celular reintenta varias veces
+            r = self._enviar(carga)
+            self.assertEqual((r.status_code, r.json()['estado']), (200, 'duplicado'))
+        self.assertEqual(HistorialCampana.objects.count(), 1)
+
+    def test_reenviar_un_analisis_de_suelo_no_lo_duplica(self):
+        carga = self._suelo()
+        self._enviar(carga)
+        self._enviar(carga)
+        self.assertEqual(AnalisisSuelo.objects.count(), 1)
+
+    def test_varios_registros_distintos_se_guardan_todos(self):
+        self._enviar(self._historial(self.papa))
+        self._enviar(self._historial(self.maiz))
+        self._enviar(self._suelo())
+        self._enviar(self._suelo(ph='7.1'))
+        self.assertEqual((HistorialCampana.objects.count(), AnalisisSuelo.objects.count()), (2, 2))
+
+    def test_los_registros_hechos_en_la_web_no_chocan_entre_si(self):
+        HistorialCampana.objects.create(parcela=self.parcela, cultivo=self.papa, campana_ini=2020, resultado='bueno')
+        HistorialCampana.objects.create(parcela=self.parcela, cultivo=self.maiz, campana_ini=2020, resultado='malo')
+        self.assertEqual(HistorialCampana.objects.filter(uuid__isnull=True).count(), 2)
+
+    # -- mismas reglas que la web
+    def test_aplica_la_regla_de_no_repetir_cultivo_en_la_campana(self):
+        self._enviar(self._historial(self.papa))
+        r = self._enviar(self._historial(self.papa))               # otro identificador, mismo cultivo y campaña
+        self.assertEqual(r.status_code, 422)
+        self.assertEqual(r.json()['estado'], 'invalido')
+        self.assertIn('Ya registró ese cultivo', ' '.join(r.json()['errores']))
+        self.assertEqual(HistorialCampana.objects.count(), 1)
+
+    def test_rechaza_datos_invalidos_y_no_guarda_nada(self):
+        r = self._enviar(self._suelo(ph='', arcilla=''))
+        self.assertEqual(r.status_code, 422)
+        self.assertIn('al menos el pH', ' '.join(r.json()['errores']))
+        r = self._enviar(self._suelo(ph='15'))
+        self.assertEqual(r.status_code, 422)
+        self.assertEqual(AnalisisSuelo.objects.count(), 0)
+
+    # -- seguridad
+    def test_sin_sesion_responde_401_y_no_redirige(self):
+        self.client.logout()
+        r = self._enviar(self._historial())
+        self.assertEqual((r.status_code, r.json()['estado']), (401, 'sin_sesion'))
+        self.assertEqual(HistorialCampana.objects.count(), 0)
+
+    def test_no_se_puede_registrar_en_la_parcela_de_otro(self):
+        otro = self.crear_usuario(nombre='Otro', celular='912345678')
+        ajena = crear_parcela(otro, self.parcela.distrito, nombre='Ajena')
+        carga = self._historial()
+        carga['parcela'] = ajena.pk
+        self.assertEqual(self._enviar(carga).status_code, 404)
+        self.assertEqual(HistorialCampana.objects.count(), 0)
+
+    def test_el_identificador_de_otro_usuario_no_revela_nada(self):
+        ajeno = uuid.uuid4()
+        otro = self.crear_usuario(nombre='Otro', celular='912345678')
+        HistorialCampana.objects.create(parcela=crear_parcela(otro, self.parcela.distrito, nombre='Ajena'),
+                                        cultivo=self.maiz, campana_ini=2020, resultado='bueno', uuid=ajeno)
+        r = self._enviar(self._historial(identificador=ajeno))
+        self.assertEqual(r.status_code, 422)                       # no dice "duplicado": no confirma que existe
+        self.assertEqual(HistorialCampana.objects.filter(parcela=self.parcela).count(), 0)
+
+    def test_exige_token_csrf(self):
+        estricto = Client(enforce_csrf_checks=True)
+        estricto.force_login(self.usuario)
+        self.assertEqual(self._enviar(self._historial(), cliente=estricto).status_code, 403)
+        self.assertEqual(HistorialCampana.objects.count(), 0)
+
+    def test_solo_acepta_post(self):
+        self.assertEqual(self.client.get(self.url).status_code, 405)
+
+    def test_solicitudes_mal_formadas_responden_400(self):
+        malas = [{'tipo': 'otro', 'uuid': str(uuid.uuid4()), 'parcela': 1, 'datos': {}},
+                 {**self._historial(), 'uuid': 'no-es-un-uuid'},
+                 {**self._historial(), 'parcela': 'x'},
+                 {**self._historial(), 'datos': 'texto'},
+                 {'tipo': 'historial'}]
+        for carga in malas:
+            self.assertEqual(self._enviar(carga).status_code, 400, carga)
+        r = self.client.post(self.url, 'esto no es json', content_type='application/json')
+        self.assertEqual(r.status_code, 400)
+        self.assertEqual(HistorialCampana.objects.count() + AnalisisSuelo.objects.count(), 0)

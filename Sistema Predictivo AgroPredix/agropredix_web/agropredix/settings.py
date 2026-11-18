@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'parcelas',
     'cultivos',
     'recomendaciones',
+    'pwa',
 ]
 
 MIDDLEWARE = [
@@ -88,5 +89,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 GOOGLE_MAPS_API_KEY = config('GOOGLE_MAPS_API_KEY', default='')
 GOOGLE_MAPS_MAP_ID = config('GOOGLE_MAPS_MAP_ID', default='DEMO_MAP_ID')
+
+PWA_VERSION = config('PWA_VERSION', default='1')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

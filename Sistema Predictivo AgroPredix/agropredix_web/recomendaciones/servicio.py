@@ -51,22 +51,43 @@ def influencia_por_factor(r, m):
              'pct': round(abs(v) / total * 100), 'ayuda': v >= 0}
             for k, v in sorted(inf.items(), key=lambda kv: -abs(kv[1]))]
 
+def analisis_vigente(parcela):
+    """Análisis de suelo más reciente de la parcela (None si no cargó ninguno)."""
+    return parcela.analisis.first()
+
+
+def _resumen_suelo(ranking, suelo):
+    """Qué valores de suelo se usaron y si vienen del análisis o de la estimación por zona."""
+    ent = ranking[0]['_ctx']['entradas']
+
+    def dato(clave, medido):
+        v = ent.get(clave)
+        return {'valor': None if v is None else round(float(v), 1), 'medido': medido}
+
+    return {'ph': dato('ph', bool(suelo and suelo.ph is not None)),
+            'arcilla': dato('arcilla', bool(suelo and suelo.arcilla is not None)),
+            'fecha': f'{suelo.fecha:%d/%m/%Y}' if suelo else ''}
+
 
 def recomendar_para_parcela(parcela, mes):
     """Ranking completo para la parcela. Devuelve dict listo para la plantilla."""
     clave = clave_distrito(parcela.distrito)
     ant = antecesor_de(parcela)
+    suelo = analisis_vigente(parcela)
+    # Lo que falte en el análisis (pH o arcilla) lo completa el motor con la estimación de la zona
+    laboratorio = {'ph': suelo.ph, 'arcilla': suelo.arcilla} if suelo else {}
     m = modelo()
     try:
-        ranking = recomendar(m, clave, mes, antecesor=ant)
+        ranking = recomendar(m, clave, mes, antecesor=ant, **laboratorio)
     except ValueError:          # antecesor no reconocido por el modelo -> se trata como desconocido
-        ranking = recomendar(m, clave, mes, antecesor=None)
+        ranking = recomendar(m, clave, mes, antecesor=None, **laboratorio)
         ant = None
     for r in ranking:
         r['influencia'] = influencia_por_factor(r, m)
         r['explicacion'] = explicar(r, m)
         r['explicacion_detallada'] = explicar(r, m, detallado=True)
-    return {'ranking': ranking, 'antecesor': ant, 'mes': int(mes), 'distrito': clave}
+    return {'ranking': ranking, 'antecesor': ant, 'mes': int(mes), 'distrito': clave,
+            'suelo': _resumen_suelo(ranking, suelo)}
 
 
 def nombres_distritos_cubiertos():

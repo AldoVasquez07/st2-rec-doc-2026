@@ -33,15 +33,26 @@ def generar(request, pk):
         mes = _mes_valido(request.POST.get('mes'))
         datos = servicio.recomendar_para_parcela(parcela, mes)
         rec = Recomendacion.objects.create(
-            parcela=parcela, mes=mes, antecesor=datos['antecesor'] or '',
+            parcela=parcela, mes=mes, antecesor=datos['antecesor'] or '', suelo=datos['suelo'],
             resultado=[{k: r[k] for k in CAMPOS_GUARDADOS} for r in datos['ranking']])
         return redirect('recomendaciones:detalle', rpk=rec.pk)
 
     return render(request, 'recomendaciones/generar.html', {
         'parcela': parcela, 'cubierto': cubierto, 'meses': MESES,
-        'mes_actual': date.today().month,
+        'mes_actual': date.today().month, 'suelo': servicio.analisis_vigente(parcela),
         'distritos_cubiertos': servicio.nombres_distritos_cubiertos(),
         'anteriores': parcela.recomendaciones.all()[:5]})
+
+
+@login_required
+def lista(request):
+    """Últimas recomendaciones del agricultor (las que quedan disponibles sin conexión)."""
+    recomendaciones = list(Recomendacion.objects.filter(parcela__usuario=request.user)
+                           .select_related('parcela__distrito')[:20])
+    for r in recomendaciones:
+        r.mes_nombre = MESES[r.mes - 1][1]
+        r.mejor = r.resultado[0] if r.resultado else None
+    return render(request, 'recomendaciones/lista.html', {'recomendaciones': recomendaciones})
 
 
 @login_required
@@ -51,3 +62,4 @@ def detalle(request, rpk):
     return render(request, 'recomendaciones/detalle.html', {
         'rec': rec, 'parcela': rec.parcela, 'mes_nombre': MESES[rec.mes - 1][1],
         'ranking': rec.resultado})
+    

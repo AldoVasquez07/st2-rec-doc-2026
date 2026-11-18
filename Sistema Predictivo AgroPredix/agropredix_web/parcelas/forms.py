@@ -6,7 +6,7 @@ from django.core.exceptions import ValidationError
 from cultivos.models import Cultivo
 from usuarios.forms import EstiloBootstrapMixin
 
-from .models import Distrito, HistorialCampana, Parcela
+from .models import AnalisisSuelo, Distrito, HistorialCampana, Parcela
 
 
 class ParcelaForm(EstiloBootstrapMixin, forms.ModelForm):
@@ -41,8 +41,6 @@ class ParcelaForm(EstiloBootstrapMixin, forms.ModelForm):
         if repetidas.exists():
             raise ValidationError('Ya tiene una parcela con ese nombre.')
         return nombre
-    
-    
 
 
 def _campanas_anteriores():
@@ -79,3 +77,29 @@ class HistorialCampanaForm(EstiloBootstrapMixin, forms.ModelForm):
             if repetidos.exists():
                 raise ValidationError('Ya registró ese cultivo en esa campaña.')
         return datos
+    
+
+class AnalisisSueloForm(EstiloBootstrapMixin, forms.ModelForm):
+    class Meta:
+        model = AnalisisSuelo
+        fields = ['fecha', 'ph', 'arcilla', 'laboratorio']
+        labels = {'fecha': 'Fecha del análisis', 'ph': 'pH del suelo', 'arcilla': 'Arcilla (%)',
+                  'laboratorio': 'Laboratorio (opcional)'}
+        help_texts = {'ph': 'Aparece en su informe como «pH». Debe estar entre 3 y 10.',
+                      'arcilla': 'Porcentaje de arcilla de la textura. Si su informe no lo trae, déjelo en blanco.'}
+        widgets = {
+            'fecha': forms.DateInput(attrs={'type': 'date'}),
+            'ph': forms.NumberInput(attrs={'step': '0.1', 'min': '3', 'max': '10'}),
+            'arcilla': forms.NumberInput(attrs={'step': '0.1', 'min': '0', 'max': '100'}),
+            'laboratorio': forms.TextInput(attrs={'placeholder': 'Ej.: Laboratorio de la universidad'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['fecha'].widget.attrs['max'] = date.today().isoformat()
+
+    def clean_fecha(self):
+        fecha = self.cleaned_data['fecha']
+        if fecha > date.today():
+            raise ValidationError('La fecha del análisis no puede ser futura.')
+        return fecha

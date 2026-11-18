@@ -11,6 +11,15 @@
     {% csrf_token %}
     <p class="mb-2">Parcela en <strong>{{ parcela.distrito.nombre }}</strong>. El sistema usa el clima y el suelo de su zona y el
       último cultivo que registró en su <a href="{% url 'parcelas:historial' parcela.pk %}">historial</a>.</p>
+    
+    {% if suelo %}
+      <p class="small text-success mb-2">✔ Se usará su análisis de suelo del {{ suelo.fecha|date:"d/m/Y" }}.
+        <a href="{% url 'parcelas:suelo' parcela.pk %}">Ver o cambiar</a></p>
+    {% else %}
+      <p class="small text-muted mb-2">Opcional: si tiene un análisis de suelo, puede
+        <a href="{% url 'parcelas:suelo' parcela.pk %}">agregarlo aquí</a> para afinar la recomendación.</p>
+    {% endif %}
+
     <div class="row align-items-end">
       <div class="col-md-5">
         <label for="mes" class="form-label">¿En qué mes piensa sembrar?</label>

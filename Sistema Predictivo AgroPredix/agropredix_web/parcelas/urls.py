@@ -11,4 +11,7 @@ urlpatterns = [
     path('<int:pk>/eliminar/', views.ParcelaDeleteView.as_view(), name='eliminar'),
     path('<int:pk>/historial/', views.historial, name='historial'),
     path('<int:pk>/historial/<int:hpk>/eliminar/', views.historial_eliminar, name='historial_eliminar'),
+    path('<int:pk>/suelo/', views.suelo, name='suelo'),
+    path('<int:pk>/suelo/<int:spk>/eliminar/', views.suelo_eliminar, name='suelo_eliminar'),
+    path('sincronizar/', views.sincronizar, name='sincronizar'),
 ]

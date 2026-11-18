@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% block title %}Suelo · {{ parcela.nombre }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Análisis de suelo de «{{ parcela.nombre }}»</h3>
+  <a class="btn btn-link" href="{% url 'parcelas:lista' %}">← Mis parcelas</a>
+</div>
+
+<div class="alert alert-info">
+  <strong>Esto es opcional.</strong> Si no tiene un análisis, AgroPredix usa los datos de suelo de su zona.
+  Si tiene uno, la recomendación se ajusta mejor a su chacra. Se usa siempre el análisis más reciente.
+</div>
+
+<form method="post" novalidate class="card shadow-sm p-3 mb-4" data-pwa-form="suelo" data-parcela="{{ parcela.pk }}"></form>
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <div class="row">
+    <div class="col-md-3">{% include 'includes/_campo.html' with campo=form.fecha %}</div>
+    <div class="col-md-3">{% include 'includes/_campo.html' with campo=form.ph %}</div>
+    <div class="col-md-3">{% include 'includes/_campo.html' with campo=form.arcilla %}</div>
+    <div class="col-md-3">{% include 'includes/_campo.html' with campo=form.laboratorio %}</div>
+  </div>
+  <div><button class="btn btn-success">Guardar análisis</button></div>
+</form>
+
+<div data-pwa-pendientes data-tipo="suelo" data-parcela="{{ parcela.pk }}"></div>
+
+{% for r in registros %}
+  <div class="card shadow-sm mb-2"><div class="card-body d-flex justify-content-between align-items-center">
+    <div>
+      <strong>{{ r.fecha|date:"d/m/Y" }}</strong>
+      {% if forloop.first %}<span class="badge bg-success ms-2">En uso</span>{% endif %}
+      <div class="text-muted small">
+        pH: {{ r.ph|default_if_none:"no indicado" }} · Arcilla: {% if r.arcilla is not None %}{{ r.arcilla }} %{% else %}no indicada{% endif %}
+        {% if r.laboratorio %}· {{ r.laboratorio }}{% endif %}
+      </div>
+    </div>
+    <form method="post" action="{% url 'parcelas:suelo_eliminar' parcela.pk r.pk %}">
+      {% csrf_token %}<button class="btn btn-outline-danger btn-sm">Quitar</button>
+    </form>
+  </div></div>
+{% empty %}
+  <div class="alert alert-light border">Todavía no registró ningún análisis de suelo.</div>
+{% endfor %}
+{% endblock %}
