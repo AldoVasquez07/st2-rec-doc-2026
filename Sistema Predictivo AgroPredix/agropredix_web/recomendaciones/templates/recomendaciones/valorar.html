@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}¿Cómo le fue? · {{ siembra.cultivo }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">¿Cómo le fue con {{ siembra.cultivo }}?</h3>
+  <a class="btn btn-link" href="{% url 'recomendaciones:seguimiento' %}">← Mis siembras</a>
+</div>
+<p class="text-muted">Parcela «{{ siembra.parcela.nombre }}» · sembrado el {{ siembra.fecha_siembra|date:"d/m/Y" }}.
+  Su respuesta nos ayuda a mejorar las recomendaciones y se anota en el historial de su parcela.</p>
+
+<form method="post" novalidate class="card shadow-sm p-3" style="max-width: 560px;">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <div class="mb-3">
+    <div class="form-label fw-semibold">{{ form.resultado.label }}</div>
+    {% for radio in form.resultado %}
+      <div class="form-check form-check-inline">
+        {{ radio.tag }}
+        <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+      </div>
+    {% endfor %}
+    {% for e in form.resultado.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="{{ form.comentario.id_for_label }}">{{ form.comentario.label }}</label>
+    {{ form.comentario }}
+    {% for e in form.comentario.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+  </div>
+  <div>
+    <button class="btn btn-success">Enviar</button>
+    <a class="btn btn-link" href="{% url 'recomendaciones:seguimiento' %}">Más tarde</a>
+  </div>
+</form>
+{% endblock %}

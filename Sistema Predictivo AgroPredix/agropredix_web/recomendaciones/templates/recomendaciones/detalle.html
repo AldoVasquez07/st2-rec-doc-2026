@@ -36,6 +36,15 @@
     </div>
     <div class="progress my-2" style="height: 10px;"><div class="progress-bar bg-success" style="width: {{ r.idoneidad|floatformat:0 }}%"></div></div>
     <div class="small text-muted">Idoneidad {{ r.idoneidad|floatformat:0 }}/100 · Certeza {{ r.certeza_pct|floatformat:0 }}%</div>
+
+    {% if r.siembra %}
+      <div class="mt-2 small text-success">✔ Lo sembró el {{ r.siembra.fecha_siembra|date:"d/m/Y" }} ·
+        <a href="{% url 'recomendaciones:seguimiento' %}">Ver seguimiento</a></div>
+    {% elif r.cod %}
+      <a class="btn btn-outline-success btn-sm mt-2" href="{% url 'recomendaciones:sembrar' rec.pk r.cod %}">Voy a sembrar este</a>
+    {% endif %}
+
+
     {% if r.influencia %}
     <details class="mt-2" {% if forloop.first %}open{% endif %}>
       <summary class="small">Qué pesó más en esta recomendación</summary>

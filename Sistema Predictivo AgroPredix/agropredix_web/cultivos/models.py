@@ -9,6 +9,7 @@ class Cultivo(models.Model):
     familia = models.CharField(max_length=60, blank=True)      # familia botánica (para la rotación)
     es_leguminosa = models.BooleanField(default=False)
     activo = models.BooleanField(default=True)
+    ciclo_dias = models.PositiveSmallIntegerField(null=True, blank=True)
 
     class Meta:
         ordering = ['nombre']

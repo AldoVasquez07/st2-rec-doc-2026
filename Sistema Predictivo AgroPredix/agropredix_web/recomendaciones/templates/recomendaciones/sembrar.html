@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% block title %}Voy a sembrar · {{ cultivo }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Voy a sembrar {{ cultivo }}</h3>
+  <a class="btn btn-link" href="{% url 'recomendaciones:detalle' rec.pk %}">← Volver a la recomendación</a>
+</div>
+<p class="text-muted">Parcela «{{ parcela.nombre }}». Con estas fechas le preguntaremos cómo le fue cuando termine la campaña.</p>
+
+<form method="post" novalidate class="card shadow-sm p-3" style="max-width: 560px;">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <div class="mb-3">
+    <label class="form-label" for="{{ form.fecha_siembra.id_for_label }}">{{ form.fecha_siembra.label }}</label>
+    {{ form.fecha_siembra }}
+    {% for e in form.fecha_siembra.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+  </div>
+  <div class="mb-3">
+    <label class="form-label" for="{{ form.cierre_estimado.id_for_label }}">{{ form.cierre_estimado.label }}</label>
+    {{ form.cierre_estimado }}
+    <div class="form-text">Si no lo sabe, déjelo en blanco: usaremos unos {{ ciclo }} días, que es lo típico para {{ cultivo }}.</div>
+    {% for e in form.cierre_estimado.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+  </div>
+  <div>
+    <button class="btn btn-success">Anotar siembra</button>
+    <a class="btn btn-link" href="{% url 'recomendaciones:detalle' rec.pk %}">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

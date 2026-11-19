@@ -1,6 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Hola, {{ user.get_short_name }}</h2>
+{% for s in pendientes_valoracion %}
+  <div class="alert alert-warning d-flex justify-content-between align-items-center">
+    <span>¿Cómo le fue con <strong>{{ s.cultivo }}</strong> en «{{ s.recomendacion.parcela.nombre }}»? Ya debería haber terminado la campaña.</span>
+    <a class="btn btn-warning btn-sm ms-2" href="{% url 'recomendaciones:valorar' s.pk %}">Contar cómo me fue</a>
+  </div>
+{% endfor %}
 <p class="lead">Registre sus parcelas y reciba recomendaciones de siembra para su zona.</p>
 {% if parcelas %}
   <h5 class="mt-4">Sus parcelas</h5>

@@ -1,18 +1,26 @@
 from datetime import date
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
+from django.views.decorators.http import require_http_methods
 
 from parcelas.models import Parcela
 
-from . import servicio
-from .models import Recomendacion
+from . import seguimiento, servicio
+from .forms import SiembraForm, ValoracionForm
+from .models import Recomendacion, Siembra
+
+
 
 MESES = [(i, n.capitalize()) for i, n in enumerate(
     ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto',
      'setiembre', 'octubre', 'noviembre', 'diciembre'], 1)]
 
-CAMPOS_GUARDADOS = ('puesto', 'cultivo', 'idoneidad', 'certeza_pct', 'idoneidad_ajustada',
+
+CAMPOS_GUARDADOS = ('puesto', 'cod', 'cultivo', 'idoneidad', 'certeza_pct', 'idoneidad_ajustada',
                     'nivel', 'influencia', 'explicacion', 'explicacion_detallada')
 
 
@@ -59,7 +67,74 @@ def lista(request):
 def detalle(request, rpk):
     rec = get_object_or_404(Recomendacion.objects.select_related('parcela__distrito'),
                             pk=rpk, parcela__usuario=request.user)   # de otro usuario: 404
+    siembras = {s.cultivo_cod: s for s in rec.siembras.all()}
+    ranking = rec.resultado
+    for r in ranking:                                    # marca los cultivos que el agricultor ya decidió sembrar
+        r['siembra'] = siembras.get(r.get('cod'))
     return render(request, 'recomendaciones/detalle.html', {
         'rec': rec, 'parcela': rec.parcela, 'mes_nombre': MESES[rec.mes - 1][1],
-        'ranking': rec.resultado})
+        'ranking': ranking})
+    
+
+# ---------- SEGUIMIENTO Y RETROALIMENTACIÓN POST-CAMPAÑA (RF-0011) ----------
+@login_required
+@require_http_methods(['GET', 'POST'])
+def sembrar(request, rpk, cod):
+    """El agricultor indica que va a sembrar uno de los cultivos recomendados."""
+    rec = get_object_or_404(Recomendacion.objects.select_related('parcela'), pk=rpk, parcela__usuario=request.user)
+    elegido = next((r for r in rec.resultado if r.get('cod') == cod), None)
+    if elegido is None:
+        raise Http404('Ese cultivo no está en esta recomendación.')
+    existente = rec.siembras.filter(cultivo_cod=cod).first()
+    if existente:
+        messages.info(request, f'Ya registró la siembra de {existente.cultivo}.')
+        return redirect('recomendaciones:seguimiento')
+
+    form = SiembraForm(request.POST or None, initial={'fecha_siembra': seguimiento.siembra_sugerida(rec)})
+    if request.method == 'POST' and form.is_valid():
+        fecha = form.cleaned_data['fecha_siembra']
+        cierre = form.cleaned_data['cierre_estimado'] or seguimiento.cierre_por_defecto(cod, fecha)
+        Siembra.objects.create(
+            recomendacion=rec, cultivo_cod=cod, cultivo=elegido['cultivo'], puesto=elegido['puesto'],
+            idoneidad=elegido['idoneidad'], certeza_pct=elegido['certeza_pct'],
+            fecha_siembra=fecha, cierre_estimado=cierre)
+        messages.success(request, f'Anotado. Le preguntaremos cómo le fue con {elegido["cultivo"]} '
+                                  f'hacia el {cierre:%d/%m/%Y}.')
+        return redirect('recomendaciones:seguimiento')
+    return render(request, 'recomendaciones/sembrar.html', {
+        'rec': rec, 'parcela': rec.parcela, 'cultivo': elegido['cultivo'], 'form': form,
+        'ciclo': seguimiento.ciclo_dias(cod)})
+
+
+@login_required
+def seguimiento_lista(request):
+    hoy = timezone.localdate()
+    siembras = (Siembra.objects.filter(recomendacion__parcela__usuario=request.user)
+                .select_related('recomendacion__parcela'))
+    return render(request, 'recomendaciones/seguimiento.html', {
+        'pendientes': [s for s in siembras if not s.valorada and s.cierre_estimado <= hoy],
+        'en_curso': [s for s in siembras if not s.valorada and s.cierre_estimado > hoy],
+        'valoradas': sorted((s for s in siembras if s.valorada), key=lambda s: s.fecha_valoracion, reverse=True)})
+
+
+@login_required
+@require_http_methods(['GET', 'POST'])
+def valorar(request, spk):
+    siembra = get_object_or_404(Siembra.objects.select_related('recomendacion__parcela'),
+                                pk=spk, recomendacion__parcela__usuario=request.user)
+    if siembra.valorada:
+        messages.info(request, 'Ya registró su valoración de esta siembra. ¡Gracias!')
+        return redirect('recomendaciones:seguimiento')
+    form = ValoracionForm(request.POST or None)
+    if request.method == 'POST' and form.is_valid():
+        siembra.resultado = form.cleaned_data['resultado']
+        siembra.comentario = form.cleaned_data['comentario'].strip()
+        siembra.fecha_valoracion = timezone.now()
+        siembra.save()
+        if seguimiento.registrar_en_historial(siembra):
+            messages.success(request, 'Gracias por contarnos. También quedó anotado en el historial de su parcela.')
+        else:
+            messages.success(request, 'Gracias por contarnos cómo le fue.')
+        return redirect('recomendaciones:seguimiento')
+    return render(request, 'recomendaciones/valorar.html', {'siembra': siembra, 'form': form})
     
