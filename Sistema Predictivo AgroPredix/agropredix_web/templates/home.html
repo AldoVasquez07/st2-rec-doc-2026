@@ -10,6 +10,14 @@
     <a class="btn btn-outline-dark btn-sm ms-2" href="{% url 'clima:parcela' a.parcela.pk %}">Ver clima</a>
   </div>
 {% endfor %}
+
+{% for r in recordatorios %}
+  <div class="alert alert-info d-flex justify-content-between align-items-center">
+    <span>{{ r.mensaje }}</span>
+    <a class="btn btn-outline-dark btn-sm ms-2" href="{% url 'recordatorios:lista' %}">Ver</a>
+  </div>
+{% endfor %}
+
 {% for s in pendientes_valoracion %}
   <div class="alert alert-warning d-flex justify-content-between align-items-center">
     <span>¿Cómo le fue con <strong>{{ s.cultivo }}</strong> en «{{ s.recomendacion.parcela.nombre }}»? Ya debería haber terminado la campaña.</span>

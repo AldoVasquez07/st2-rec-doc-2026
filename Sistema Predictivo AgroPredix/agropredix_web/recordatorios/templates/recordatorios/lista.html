@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Mis recordatorios · AgroPredix{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3 class="mb-0">Mis recordatorios</h3>
+  <a class="btn btn-outline-success btn-sm" href="{% url 'recordatorios:preferencias' %}">Configurar avisos</a>
+</div>
+{% for r in recordatorios %}
+  <div class="card shadow-sm mb-2 {% if not r.leido %}border-success{% endif %}"><div class="card-body">
+    <span class="badge bg-success">{{ r.get_tipo_display }}</span>
+    {% if not r.leido %}<span class="badge bg-warning text-dark">Nuevo</span>{% endif %}
+    <div class="mt-1">{{ r.mensaje }}</div>
+  </div></div>
+{% empty %}
+  <p class="text-muted">Todavía no tiene recordatorios. Aparecerán aquí cuando registre una siembra y se acerque su fecha.</p>
+{% endfor %}
+{% endblock %}

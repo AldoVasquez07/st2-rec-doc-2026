@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'asistencia',
     'reportes',
     'pwa',
+    'recordatorios',
 ]
 
 MIDDLEWARE = [
@@ -98,3 +99,8 @@ REPORTES_MIN_USUARIOS = config('REPORTES_MIN_USUARIOS', default=5, cast=int)
 PWA_VERSION = config('PWA_VERSION', default='1')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+VAPID_PUBLIC_KEY = config('VAPID_PUBLIC_KEY', default='')
+VAPID_PRIVATE_KEY = config('VAPID_PRIVATE_KEY', default='')      # ruta al archivo .pem
+VAPID_CONTACTO = config('VAPID_CONTACTO', default='mailto:admin@agropredix.pe')
+SMS_HABILITADO = config('SMS_HABILITADO', default=False, cast=bool)

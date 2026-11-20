@@ -7,7 +7,7 @@ from django.views.generic import FormView, TemplateView, UpdateView
 from alertas.servicio import alertas_de_usuario
 from recomendaciones.seguimiento import pendientes_de_valorar
 from .forms import CambiarClaveForm, LoginForm, PerfilForm, RegistroForm
-
+from recordatorios.models import Recordatorio
 
 class IngresarView(LoginView):
     template_name = 'usuarios/login.html'
@@ -58,4 +58,5 @@ class HomeView(LoginRequiredMixin, TemplateView):
         ctx['parcelas'] = self.request.user.parcelas.select_related('distrito')[:5]
         ctx['pendientes_valoracion'] = list(pendientes_de_valorar(self.request.user)[:3])
         ctx['alertas'] = alertas_de_usuario(self.request.user)
+        ctx['recordatorios'] = list(Recordatorio.objects.filter(usuario=self.request.user, leido=False)[:3])
         return ctx

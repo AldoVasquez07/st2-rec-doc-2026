@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Configurar avisos · AgroPredix{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-md-6">
+  <div class="card shadow-sm"><div class="card-body p-4">
+    <h4 class="mb-3">Avisos de su campaña</h4>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      {% include 'includes/_campo.html' with campo=form.canal %}
+      {% include 'includes/_campo.html' with campo=form.avisar_siembra %}
+      {% include 'includes/_campo.html' with campo=form.avisar_cosecha %}
+      {% include 'includes/_campo.html' with campo=form.dias_antes %}
+      <button class="btn btn-success">Guardar</button>
+      <a class="btn btn-outline-secondary" href="{% url 'recordatorios:lista' %}">Ver mis recordatorios</a>
+    </form>
+    {% if vapid_public %}
+    <hr>
+    <p class="small text-muted">Para recibir avisos push, active las notificaciones en este celular.</p>
+    <button id="btn-push" type="button" class="btn btn-outline-success btn-sm"
+            data-clave="{{ vapid_public }}" data-url="{% url 'recordatorios:suscribir' %}">
+      Activar notificaciones en este celular</button>
+    {% endif %}
+  </div></div>
+</div></div>
+{% endblock %}
+{% block extra_js %}<script src="{% static 'recordatorios/push.js' %}"></script>{% endblock %}
