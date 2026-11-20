@@ -1,0 +1,11 @@
+antecesor \ cultivo,Cebolla,Maiz Chala,Ajo,Papa,Zanahoria,Arveja Grano Verde,Haba Grano Verde,Alfalfa,Apio,Frijol Vainita
+Cebolla,desfavorable,neutro,desfavorable,neutro,neutro,neutro,neutro,neutro,neutro,neutro
+Maiz Chala,neutro,desfavorable,neutro,neutro,neutro,neutro,neutro,neutro,neutro,neutro
+Ajo,desfavorable,neutro,desfavorable,neutro,neutro,neutro,neutro,neutro,neutro,neutro
+Papa,neutro,neutro,neutro,desfavorable,neutro,neutro,neutro,neutro,neutro,neutro
+Zanahoria,neutro,neutro,neutro,neutro,desfavorable,neutro,neutro,neutro,desfavorable,neutro
+Arveja Grano Verde,favorable,favorable,favorable,favorable,favorable,desfavorable,desfavorable,desfavorable,favorable,desfavorable
+Haba Grano Verde,favorable,favorable,favorable,favorable,favorable,desfavorable,desfavorable,desfavorable,favorable,desfavorable
+Alfalfa,favorable,favorable,favorable,favorable,favorable,desfavorable,desfavorable,desfavorable,favorable,desfavorable
+Apio,neutro,neutro,neutro,neutro,desfavorable,neutro,neutro,neutro,desfavorable,neutro
+Frijol Vainita,favorable,favorable,favorable,favorable,favorable,desfavorable,desfavorable,desfavorable,favorable,desfavorable

@@ -1,0 +1,151 @@
+[
+ {
+  "id": "R01",
+  "si": {
+   "temperatura": [
+    "adecuada"
+   ],
+   "ph": [
+    "adecuado"
+   ],
+   "textura": [
+    "adecuada"
+   ],
+   "antecesor": [
+    "favorable",
+    "neutro"
+   ],
+   "epoca": [
+    "tipica"
+   ],
+   "helada": [
+    "sin_riesgo"
+   ]
+  },
+  "entonces": "alta",
+  "texto": "clima, suelo, rotación y época son favorables"
+ },
+ {
+  "id": "R02",
+  "si": {
+   "antecesor": [
+    "favorable"
+   ],
+   "temperatura": [
+    "adecuada"
+   ],
+   "ph": [
+    "adecuado"
+   ]
+  },
+  "entonces": "alta",
+  "texto": "el cultivo anterior ayuda y el clima y la acidez del suelo son adecuados"
+ },
+ {
+  "id": "R03",
+  "si": {
+   "temperatura": [
+    "adecuada"
+   ],
+   "ph": [
+    "adecuado"
+   ],
+   "textura": [
+    "adecuada"
+   ],
+   "antecesor": [
+    "desfavorable"
+   ]
+  },
+  "entonces": "media",
+  "texto": "clima y suelo sirven, pero el cultivo anterior no es el mejor antecesor"
+ },
+ {
+  "id": "R04",
+  "si": {
+   "temperatura": [
+    "adecuada"
+   ],
+   "ph": [
+    "adecuado"
+   ],
+   "textura": [
+    "inadecuada"
+   ]
+  },
+  "entonces": "media",
+  "texto": "clima y acidez sirven, pero el tipo de suelo no es el ideal"
+ },
+ {
+  "id": "R05",
+  "si": {
+   "temperatura": [
+    "adecuada"
+   ],
+   "ph": [
+    "inadecuado"
+   ]
+  },
+  "entonces": "media",
+  "texto": "el clima sirve, pero la acidez del suelo no es la ideal"
+ },
+ {
+  "id": "R06",
+  "si": {
+   "ph": [
+    "inadecuado"
+   ],
+   "textura": [
+    "inadecuada"
+   ]
+  },
+  "entonces": "baja",
+  "texto": "ni la acidez ni el tipo de suelo son adecuados"
+ },
+ {
+  "id": "R07",
+  "si": {
+   "temperatura": [
+    "adecuada"
+   ],
+   "epoca": [
+    "poco_usual"
+   ]
+  },
+  "entonces": "media",
+  "texto": "el clima sirve, pero no es una época habitual de siembra en la zona"
+ },
+ {
+  "id": "R08",
+  "si": {
+   "temperatura": [
+    "inadecuada"
+   ]
+  },
+  "entonces": "baja",
+  "texto": "la temperatura de este mes no es adecuada para el cultivo"
+ },
+ {
+  "id": "R09",
+  "si": {
+   "helada": [
+    "con_riesgo"
+   ]
+  },
+  "entonces": "baja",
+  "texto": "hay riesgo de helada y el cultivo no la tolera"
+ },
+ {
+  "id": "R10",
+  "si": {
+   "antecesor": [
+    "desfavorable"
+   ],
+   "epoca": [
+    "poco_usual"
+   ]
+  },
+  "entonces": "baja",
+  "texto": "la rotación no ayuda y además no es época habitual de siembra"
+ }
+]
