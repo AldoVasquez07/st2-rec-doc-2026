@@ -32,6 +32,7 @@ const PAGINAS_GUARDABLES = [
   /^\/parcelas\/$/,
   /^\/recomendaciones\/$/,
   /^\/recomendaciones\/\d+\/$/,
+  /^\/clima\/parcela\/\d+\/$/,                  // clima: sin señal se ve el último dato guardado (RF-0010)
   /^\/parcelas\/\d+\/(historial|suelo)\/$/,     // se pueden abrir sin señal para registrar datos (se sincronizan al volver)
 ];
 

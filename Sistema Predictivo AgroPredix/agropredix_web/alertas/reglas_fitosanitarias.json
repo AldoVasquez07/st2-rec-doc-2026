@@ -1,0 +1,40 @@
+{
+  "estado": "BORRADOR: umbrales provisionales, pendientes de validación por un ingeniero agrónomo (panel de expertos)",
+  "ventana_dias": 7,
+  "min_dias_con_dato": 3,
+  "reglas": [
+    {
+      "id": "hongos_foliares",
+      "nombre": "Hongos de las hojas (mildiu, rancha)",
+      "tipo": "hongo",
+      "niveles": {
+        "medio": {"humedad_media": {"min": 70}, "temp_media": {"min": 10, "max": 25}},
+        "alto":  {"humedad_media": {"min": 80}, "temp_media": {"min": 12, "max": 22}}
+      },
+      "factor": "Humedad alta ({humedad_media:.0f} %) con temperatura templada ({temp_media:.0f} °C) en los últimos {dias} días",
+      "sin_riesgo": "La humedad de los últimos {dias} días no favorece hongos en las hojas"
+    },
+    {
+      "id": "oidio",
+      "nombre": "Oídio (hongo de polvillo blanco)",
+      "tipo": "hongo",
+      "niveles": {
+        "medio": {"humedad_media": {"min": 50, "max": 80}, "temp_media": {"min": 18, "max": 28}},
+        "alto":  {"humedad_media": {"min": 60, "max": 80}, "temp_media": {"min": 22, "max": 28}}
+      },
+      "factor": "Calor moderado ({temp_media:.0f} °C) con humedad media ({humedad_media:.0f} %) en los últimos {dias} días",
+      "sin_riesgo": "Las condiciones de los últimos {dias} días no favorecen el oídio"
+    },
+    {
+      "id": "plagas_calor_seco",
+      "nombre": "Plagas de clima cálido y seco (trips, ácaros, polilla)",
+      "tipo": "plaga",
+      "niveles": {
+        "medio": {"temp_media": {"min": 20}, "humedad_media": {"max": 60}},
+        "alto":  {"temp_media": {"min": 23}, "humedad_media": {"max": 50}, "precip_total": {"max": 1}}
+      },
+      "factor": "Temperatura alta ({temp_media:.0f} °C) y ambiente seco (humedad {humedad_media:.0f} %) en los últimos {dias} días",
+      "sin_riesgo": "El clima de los últimos {dias} días no favorece plagas de calor y sequedad"
+    }
+  ]
+}

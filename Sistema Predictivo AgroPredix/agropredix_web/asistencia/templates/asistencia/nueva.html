@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Hacer una consulta · AgroPredix{% endblock %}
+{% block content %}
+<h3>Consulta a un especialista</h3>
+<p class="text-muted">Describa su duda. Un especialista la revisará y la respuesta aparecerá en «Mis consultas».</p>
+<form method="post" class="card shadow-sm card-body" style="max-width: 640px">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  {% for campo in form %}
+    <div class="mb-3">
+      <label class="form-label" for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+      {{ campo }}
+      {% for e in campo.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+    </div>
+  {% endfor %}
+  <div class="d-flex gap-2">
+    <button class="btn btn-success">Enviar consulta</button>
+    <a class="btn btn-outline-secondary" href="{% url 'asistencia:lista' %}">Cancelar</a>
+  </div>
+</form>
+{% endblock %}

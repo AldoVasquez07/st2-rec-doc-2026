@@ -7,6 +7,9 @@ urlpatterns = [
     path('cuenta/', include('usuarios.urls')),
     path('parcelas/', include('parcelas.urls')),
     path('recomendaciones/', include('recomendaciones.urls')),
+    path('clima/', include('clima.urls')),
+    path('asistencia/', include('asistencia.urls')),
+    path('reportes/', include('reportes.urls')),
     path('', include('pwa.urls')),
     path('', HomeView.as_view(), name='home'),
 ]

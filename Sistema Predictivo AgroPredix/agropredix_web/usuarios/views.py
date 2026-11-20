@@ -4,6 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView, UpdateView
+from alertas.servicio import alertas_de_usuario
 from recomendaciones.seguimiento import pendientes_de_valorar
 from .forms import CambiarClaveForm, LoginForm, PerfilForm, RegistroForm
 
@@ -56,4 +57,5 @@ class HomeView(LoginRequiredMixin, TemplateView):
         ctx = super().get_context_data(**kwargs)
         ctx['parcelas'] = self.request.user.parcelas.select_related('distrito')[:5]
         ctx['pendientes_valoracion'] = list(pendientes_de_valorar(self.request.user)[:3])
+        ctx['alertas'] = alertas_de_usuario(self.request.user)
         return ctx

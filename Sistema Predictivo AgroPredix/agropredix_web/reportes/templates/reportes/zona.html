@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% block title %}Mi zona · AgroPredix{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+  <div>
+    <h3 class="mb-0">Cultivos en {{ distrito.nombre }} y zonas cercanas</h3>
+    <div class="text-muted small">Datos agrupados y anónimos. No se muestra información de ningún agricultor.</div>
+  </div>
+  {% if mis_distritos|length > 1 %}
+  <div class="btn-group">
+    {% for d in mis_distritos %}
+      <a class="btn btn-sm {% if d.pk == distrito.pk %}btn-success{% else %}btn-outline-success{% endif %}"
+         href="?distrito={{ d.pk }}">{{ d.nombre }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+
+{% for r in reportes %}{% if not r.visible %}
+  <div class="alert alert-secondary py-2 small">
+    {{ r.distrito.nombre }}: todavía no hay suficientes agricultores para mostrar datos (se necesitan al menos {{ minimo }}).
+  </div>
+{% endif %}{% endfor %}
+
+{% if hay_datos %}
+  <div class="card shadow-sm mb-3"><div class="card-body">
+    <h6 class="card-title">Cultivos más recomendados (primer lugar)</h6>
+    <canvas id="g-rec" height="110" role="img" aria-label="Cultivos más recomendados por distrito"></canvas>
+  </div></div>
+  <div class="card shadow-sm mb-3"><div class="card-body">
+    <h6 class="card-title">Cultivos más sembrados</h6>
+    <canvas id="g-sem" height="110" role="img" aria-label="Cultivos más sembrados por distrito"></canvas>
+  </div></div>
+  <div class="card shadow-sm mb-3"><div class="card-body">
+    <h6 class="card-title">Siembras por mes (últimos 12 meses)</h6>
+    <canvas id="g-mes" height="110" role="img" aria-label="Siembras por mes"></canvas>
+  </div></div>
+  {{ graficos|json_script:"datos-reporte" }}
+{% else %}
+  <div class="alert alert-info">
+    Todavía no hay suficientes agricultores en su zona para mostrar reportes anónimos.
+    Cuando haya al menos {{ minimo }} en un distrito, aparecerán aquí.
+  </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+{% if hay_datos %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  if (typeof Chart === 'undefined') {
+    document.querySelectorAll('canvas').forEach(function (c) {
+      var p = document.createElement('p'); p.className = 'text-muted';
+      p.textContent = 'Los gráficos necesitan haberse abierto antes con conexión.'; c.replaceWith(p);
+    });
+    return;
+  }
+  var g = JSON.parse(document.getElementById('datos-reporte').textContent);
+  var colores = ['#198754', '#0d6efd', '#fd7e14', '#6f42c1', '#dc3545'];
+  function serie(s, i) {
+    return {label: s.nombre, data: s.valores, backgroundColor: colores[i % 5], borderColor: colores[i % 5]};
+  }
+  var opciones = {responsive: true, plugins: {legend: {position: 'bottom'}},
+                  scales: {y: {beginAtZero: true, ticks: {precision: 0}}}};
+  new Chart('g-rec', {type: 'bar', options: opciones,
+    data: {labels: g.recomendados.etiquetas, datasets: g.recomendados.series.map(function (s, i) { return serie(s, i); })}});
+  new Chart('g-sem', {type: 'bar', options: opciones,
+    data: {labels: g.sembrados.etiquetas, datasets: g.sembrados.series.map(function (s, i) { return serie(s, i); })}});
+  new Chart('g-mes', {type: 'line', options: opciones,
+    data: {labels: g.meses, datasets: g.por_mes.map(function (s, i) {
+      return Object.assign(serie(s, i), {tension: .3});
+    })}});
+})();
+</script>
+{% endif %}
+{% endblock %}

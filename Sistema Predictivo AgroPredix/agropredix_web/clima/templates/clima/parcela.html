@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block title %}Clima de {{ parcela.distrito.nombre }} · AgroPredix{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+  <div>
+    <h3 class="mb-0">Clima de {{ parcela.distrito.nombre }}</h3>
+    <div class="text-muted">Para su parcela «{{ parcela.nombre }}»</div>
+  </div>
+  <div class="btn-group" role="group" aria-label="Período">
+    {% for r in rangos %}
+      <a class="btn btn-sm {% if r == dias %}btn-success{% else %}btn-outline-success{% endif %}"
+         href="?dias={{ r }}">Últimos {{ r }} días</a>
+    {% endfor %}
+  </div>
+</div>
+
+{% if not estado.hay_datos %}
+  <div class="alert alert-info">Todavía no tenemos datos de clima guardados para este distrito. Vuelva a intentar más tarde.</div>
+{% else %}
+  {% if estado.desactualizado %}
+    <div class="alert alert-warning">
+      No pudimos actualizar el clima. Le mostramos el último dato guardado, del
+      <strong>{{ estado.ultimo_dato|date:"d/m/Y" }}</strong>.
+    </div>
+  {% else %}
+    <p class="text-muted small">Datos hasta el {{ estado.ultimo_dato|date:"d/m/Y" }}. Fuente: NASA POWER (estimación por satélite, no es una estación local).</p>
+  {% endif %}
+
+  {% if alertas %}
+    <h5 class="mt-3">Riesgo de plagas y hongos</h5>
+    <p class="text-muted small mb-2">Aviso orientativo según el clima de los últimos días. Para su caso concreto consulte a un especialista.</p>
+    <div class="row g-2 mb-3">
+      {% for a in alertas %}
+        <div class="col-md-4">
+          <div class="card border-{{ a.color }} h-100">
+            <div class="card-body">
+              <span class="badge bg-{{ a.color }}{% if a.color == 'warning' %} text-dark{% endif %} mb-2">{{ a.etiqueta }}</span>
+              <div class="fw-semibold">{{ a.nombre }}</div>
+              <div class="small text-muted">{{ a.factor }}</div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <a class="btn btn-outline-secondary btn-sm mb-3" href="{% url 'asistencia:nueva' %}?parcela={{ parcela.pk }}">Consultar a un especialista</a>
+  {% endif %}
+
+  <div class="card shadow-sm mb-3"><div class="card-body">
+    <h6 class="card-title">Temperatura (°C)</h6>
+    <canvas id="g-temp" height="110" aria-label="Gráfico de temperatura" role="img"></canvas>
+  </div></div>
+  <div class="card shadow-sm mb-3"><div class="card-body">
+    <h6 class="card-title">Humedad del aire (%)</h6>
+    <canvas id="g-hum" height="110" aria-label="Gráfico de humedad" role="img"></canvas>
+  </div></div>
+  <div class="card shadow-sm mb-3"><div class="card-body">
+    <h6 class="card-title">Lluvia (mm por día)</h6>
+    <canvas id="g-lluvia" height="110" aria-label="Gráfico de lluvia" role="img"></canvas>
+  </div></div>
+  {{ datos|json_script:"datos-clima" }}
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+{% if estado.hay_datos %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  if (typeof Chart === 'undefined') {   // sin conexión y sin la librería guardada: se avisa en vez de dejar vacío
+    document.querySelectorAll('canvas').forEach(function (c) {
+      var p = document.createElement('p'); p.className = 'text-muted';
+      p.textContent = 'Los gráficos necesitan haberse abierto antes con conexión.'; c.replaceWith(p);
+    });
+    return;
+  }
+  var d = JSON.parse(document.getElementById('datos-clima').textContent);
+  var base = {responsive: true, interaction: {mode: 'index', intersect: false}, spanGaps: true,
+              plugins: {legend: {position: 'bottom'}}, scales: {x: {ticks: {maxTicksLimit: 8}}}};
+  var linea = function (etiqueta, datos, color) {
+    return {label: etiqueta, data: datos, borderColor: color, backgroundColor: color, pointRadius: 0, tension: .3};
+  };
+  new Chart('g-temp', {type: 'line', options: base, data: {labels: d.fechas, datasets: [
+    linea('Máxima', d.temp_max, '#dc3545'), linea('Promedio', d.temp_media, '#198754'), linea('Mínima', d.temp_min, '#0d6efd')]}});
+  new Chart('g-hum', {type: 'line', options: Object.assign({}, base, {scales: {x: base.scales.x, y: {min: 0, max: 100}}}),
+    data: {labels: d.fechas, datasets: [linea('Humedad', d.humedad, '#0dcaf0')]}});
+  new Chart('g-lluvia', {type: 'bar', options: base, data: {labels: d.fechas, datasets: [
+    {label: 'Lluvia', data: d.precipitacion, backgroundColor: '#0d6efd'}]}});
+})();
+</script>
+{% endif %}
+{% endblock %}

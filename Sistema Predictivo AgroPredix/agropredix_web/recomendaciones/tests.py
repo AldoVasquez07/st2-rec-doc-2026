@@ -517,3 +517,43 @@ class CiclosTests(PruebaBase):
         from .motor.agropredix_motor import cargar_modelo
         from .servicio import RUTA_MODELO
         self.assertEqual(set(cargar_modelo(RUTA_MODELO)['cultivos']), set(CICLOS_REFERENCIALES))
+        
+        
+class CatalogoDelModeloTests(PruebaBase):
+    def test_crea_los_diez_cultivos_que_cubre_el_modelo(self):
+        call_command('cargar_cultivos_modelo', stdout=StringIO())
+        self.assertEqual(Cultivo.objects.count(), 10)
+        self.assertTrue(Cultivo.objects.get(nombre='Alfalfa').es_leguminosa)
+        self.assertFalse(Cultivo.objects.get(nombre='Papa').es_leguminosa)
+
+    def test_repetirlo_no_duplica_ni_pisa_lo_corregido(self):
+        call_command('cargar_cultivos_modelo', stdout=StringIO())
+        Cultivo.objects.filter(nombre='Papa').update(ciclo_dias=999)
+        salida = StringIO()
+        call_command('cargar_cultivos_modelo', stdout=salida)
+        self.assertEqual(Cultivo.objects.count(), 10)
+        self.assertEqual(Cultivo.objects.get(nombre='Papa').ciclo_dias, 999)
+        self.assertIn('0 cultivos creados', salida.getvalue())
+
+    def test_un_nombre_ya_usado_con_otro_codigo_avisa_y_no_falla(self):
+        crear_cultivo('Papa', codigo='77777')
+        salida = StringIO()
+        call_command('cargar_cultivos_modelo', stdout=salida)
+        self.assertIn('Papa: ya existe en el catálogo con otro código', salida.getvalue())
+        self.assertEqual(Cultivo.objects.count(), 10)          # los otros 9 sí se crearon
+
+    def test_despues_de_cargar_el_catalogo_los_ciclos_se_asignan_a_los_diez(self):
+        call_command('cargar_cultivos_modelo', stdout=StringIO())
+        salida = StringIO()
+        call_command('cargar_ciclos', stdout=salida)
+        self.assertIn('10 cultivos con ciclo asignado', salida.getvalue())
+        self.assertFalse(Cultivo.objects.filter(ciclo_dias__isnull=True).exists())
+
+    def test_el_nombre_de_cada_cultivo_del_catalogo_sirve_como_antecesor(self):
+        """Lo que guarda el historial (Cultivo.nombre) debe ser entendido por el motor."""
+        from .motor.agropredix_motor import cargar_modelo, recomendar
+        call_command('cargar_cultivos_modelo', stdout=StringIO())
+        modelo = cargar_modelo(servicio.RUTA_MODELO)
+        for cultivo in Cultivo.objects.all():
+            recomendar(modelo, 'TIABAYA', 11, antecesor=cultivo.nombre)       # no debe lanzar ValueError
+            

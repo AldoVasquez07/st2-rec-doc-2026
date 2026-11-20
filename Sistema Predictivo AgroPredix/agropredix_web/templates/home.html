@@ -1,6 +1,15 @@
 {% extends 'base.html' %}
 {% block content %}
 <h2>Hola, {{ user.get_short_name }}</h2>
+{% for a in alertas %}
+  <div class="alert alert-{{ a.color }} d-flex justify-content-between align-items-center" role="alert">
+    <span>
+      <strong>{{ a.etiqueta }}: {{ a.nombre }}</strong> en «{{ a.parcela.nombre }}».
+      <span class="d-block small">{{ a.factor }}.</span>
+    </span>
+    <a class="btn btn-outline-dark btn-sm ms-2" href="{% url 'clima:parcela' a.parcela.pk %}">Ver clima</a>
+  </div>
+{% endfor %}
 {% for s in pendientes_valoracion %}
   <div class="alert alert-warning d-flex justify-content-between align-items-center">
     <span>¿Cómo le fue con <strong>{{ s.cultivo }}</strong> en «{{ s.recomendacion.parcela.nombre }}»? Ya debería haber terminado la campaña.</span>
@@ -14,7 +23,10 @@
     {% for p in parcelas %}
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <span>{{ p.nombre }} <span class="text-muted">· {{ p.distrito.nombre }} · {{ p.area_ha }} ha</span></span>
-        <a class="btn btn-success btn-sm" href="{% url 'recomendaciones:generar' p.pk %}">¿Qué sembrar?</a>
+        <span>
+          <a class="btn btn-outline-success btn-sm" href="{% url 'clima:parcela' p.pk %}">Clima</a>
+          <a class="btn btn-success btn-sm" href="{% url 'recomendaciones:generar' p.pk %}">¿Qué sembrar?</a>
+        </span>
       </li>
     {% endfor %}
   </ul>
