@@ -5,7 +5,7 @@ from django.core.exceptions import ValidationError
 
 from cultivos.models import Cultivo
 from usuarios.forms import EstiloBootstrapMixin
-
+from .geografia import distrito_mas_cercano
 from .models import AnalisisSuelo, Distrito, HistorialCampana, Parcela
 
 
@@ -15,7 +15,8 @@ class ParcelaForm(EstiloBootstrapMixin, forms.ModelForm):
         fields = ['nombre', 'distrito', 'area_ha', 'latitud', 'longitud', 'referencia']
         labels = {'nombre': 'Nombre de su parcela', 'area_ha': 'Tamaño aproximado (hectáreas)',
                   'latitud': 'Latitud', 'longitud': 'Longitud', 'referencia': 'Referencia (opcional)'}
-        help_texts = {'area_ha': 'Un dato aproximado basta. 1 hectárea = 10 000 m².'}
+        help_texts = {'area_ha': 'Un dato aproximado basta. 1 hectárea = 10 000 m².',
+                      'distrito': 'Opcional: si lo deja en blanco, lo detectamos con el punto que marque en el mapa.'}
         widgets = {
             'area_ha': forms.NumberInput(attrs={'step': '0.01', 'min': '0.01'}),
             'latitud': forms.NumberInput(attrs={'readonly': True, 'step': 'any'}),
@@ -31,7 +32,8 @@ class ParcelaForm(EstiloBootstrapMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.usuario = usuario
         self.fields['distrito'].queryset = Distrito.objects.all()
-        self.fields['distrito'].empty_label = 'Elija su distrito'
+        self.fields['distrito'].empty_label = 'Detectar con el mapa'
+        self.fields['distrito'].required = False
 
     def clean_nombre(self):
         nombre = self.cleaned_data['nombre'].strip()
@@ -41,6 +43,17 @@ class ParcelaForm(EstiloBootstrapMixin, forms.ModelForm):
         if repetidas.exists():
             raise ValidationError('Ya tiene una parcela con ese nombre.')
         return nombre
+    
+    def clean(self):
+        datos = super().clean()
+        lat, lon = datos.get('latitud'), datos.get('longitud')
+        if not datos.get('distrito') and lat is not None and lon is not None:
+            detectado = distrito_mas_cercano(lat, lon)
+            if detectado is None:
+                self.add_error('distrito', 'No pudimos ubicar su distrito con el mapa. Elíjalo de la lista.')
+            else:
+                datos['distrito'] = detectado
+        return datos
 
 
 def _campanas_anteriores():

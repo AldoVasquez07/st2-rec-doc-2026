@@ -46,7 +46,7 @@ class FormularioParcelaMixin(PropietarioMixin):
 
     def form_valid(self, form):
         form.instance.usuario = self.request.user
-        messages.success(self.request, 'Su parcela fue guardada.')
+        messages.success(self.request, f'Su parcela fue guardada en el distrito de {form.cleaned_data["distrito"].nombre}.')
         return super().form_valid(form)
 
 

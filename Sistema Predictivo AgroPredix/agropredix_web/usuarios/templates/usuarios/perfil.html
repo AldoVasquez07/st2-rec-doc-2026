@@ -12,6 +12,7 @@
       {% include 'includes/_campo.html' with campo=form.correo %}
       <button class="btn btn-success">Guardar cambios</button>
       <a class="btn btn-outline-secondary" href="{% url 'usuarios:cambiar_clave' %}">Cambiar mi contraseña</a>
+      <a class="btn btn-outline-danger" href="{% url 'usuarios:eliminar_cuenta' %}">Eliminar mi cuenta</a>
     </form>
   </div></div>
 </div></div>

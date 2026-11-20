@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block title %}Eliminar cuenta · AgroPredix{% endblock %}
+{% block content %}
+<div class="row justify-content-center"><div class="col-md-6">
+  <div class="card border-danger shadow-sm"><div class="card-body p-4">
+    <h4 class="text-danger mb-3">Eliminar mi cuenta</h4>
+    <p>Se borrarán <strong>para siempre</strong> su cuenta, sus parcelas, recomendaciones, siembras y consultas. No se puede deshacer.</p>
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+      {% include 'includes/_campo.html' with campo=form.password %}
+      <button class="btn btn-danger">Sí, eliminar mi cuenta</button>
+      <a class="btn btn-outline-secondary" href="{% url 'usuarios:perfil' %}">Cancelar</a>
+    </form>
+  </div></div>
+</div></div>
+{% endblock %}

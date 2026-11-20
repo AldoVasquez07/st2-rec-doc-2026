@@ -10,7 +10,7 @@ from django.views.decorators.http import require_http_methods
 from parcelas.models import Parcela
 
 from . import seguimiento, servicio
-from .forms import SiembraForm, ValoracionForm
+from .forms import PreguntasForm, SiembraForm, ValoracionForm
 from .models import Recomendacion, Siembra
 
 
@@ -37,16 +37,22 @@ def generar(request, pk):
     parcela = get_object_or_404(Parcela.objects.select_related('distrito'), pk=pk, usuario=request.user)
     cubierto = servicio.cubre(parcela.distrito)
 
-    if request.method == 'POST' and cubierto:
+    preguntar_cultivo = servicio.antecesor_de(parcela) is None
+    preguntas = PreguntasForm(request.POST or None, preguntar_cultivo=preguntar_cultivo)
+
+    if request.method == 'POST' and cubierto and preguntas.is_valid():
         mes = _mes_valido(request.POST.get('mes'))
-        datos = servicio.recomendar_para_parcela(parcela, mes)
+        ultimo = preguntas.cleaned_data.get('ultimo_cultivo')
+        datos = servicio.recomendar_para_parcela(
+            parcela, mes, tierra=preguntas.cleaned_data.get('tierra') or None,
+            ultimo_cultivo=ultimo.nombre if ultimo else None)
         rec = Recomendacion.objects.create(
             parcela=parcela, mes=mes, antecesor=datos['antecesor'] or '', suelo=datos['suelo'],
             resultado=[{k: r[k] for k in CAMPOS_GUARDADOS} for r in datos['ranking']])
         return redirect('recomendaciones:detalle', rpk=rec.pk)
 
     return render(request, 'recomendaciones/generar.html', {
-        'parcela': parcela, 'cubierto': cubierto, 'meses': MESES,
+        'parcela': parcela, 'cubierto': cubierto, 'meses': MESES, 'preguntas': preguntas, 
         'mes_actual': date.today().month, 'suelo': servicio.analisis_vigente(parcela),
         'distritos_cubiertos': servicio.nombres_distritos_cubiertos(),
         'anteriores': parcela.recomendaciones.all()[:5]})

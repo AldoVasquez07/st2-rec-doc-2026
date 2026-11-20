@@ -557,3 +557,49 @@ class CatalogoDelModeloTests(PruebaBase):
         for cultivo in Cultivo.objects.all():
             recomendar(modelo, 'TIABAYA', 11, antecesor=cultivo.nombre)       # no debe lanzar ValueError
             
+class PreguntasOpcionalesTests(PruebaBase):
+    """RF-0004: preguntas en lenguaje cotidiano, opcionales."""
+
+    def setUp(self):
+        self.usuario = self.crear_usuario()
+        self.parcela = crear_parcela(self.usuario, distrito_tiabaya())
+
+    def test_la_tierra_pesada_sube_la_arcilla_y_se_marca_como_declarada(self):
+        s = servicio.recomendar_para_parcela(self.parcela, 11, tierra='pesada')['suelo']
+        self.assertEqual(s['arcilla']['valor'], 40.0)
+        self.assertTrue(s['arcilla']['declarada'])
+        self.assertFalse(s['arcilla']['medido'])
+
+    def test_el_analisis_de_laboratorio_gana_a_la_respuesta(self):
+        AnalisisSuelo.objects.create(parcela=self.parcela, fecha=date(2026, 3, 10), arcilla=15.0)
+        s = servicio.recomendar_para_parcela(self.parcela, 11, tierra='pesada')['suelo']
+        self.assertEqual(s['arcilla']['valor'], 15.0)
+        self.assertTrue(s['arcilla']['medido'])
+        self.assertFalse(s['arcilla']['declarada'])
+
+    def test_sin_responder_usa_la_zona(self):
+        s = servicio.recomendar_para_parcela(self.parcela, 11)['suelo']
+        self.assertFalse(s['arcilla']['declarada'])
+        self.assertFalse(s['arcilla']['medido'])
+
+    def test_ultimo_cultivo_se_usa_si_no_hay_historial(self):
+        datos = servicio.recomendar_para_parcela(self.parcela, 11, ultimo_cultivo='Arveja Grano Verde')
+        self.assertEqual(datos['antecesor'], 'Arveja Grano Verde')
+
+    def test_el_historial_gana_al_ultimo_cultivo_declarado(self):
+        papa = crear_cultivo('Papa', codigo='14030100000')
+        HistorialCampana.objects.create(parcela=self.parcela, cultivo=papa, campana_ini=2025, resultado='bueno')
+        datos = servicio.recomendar_para_parcela(self.parcela, 11, ultimo_cultivo='Arveja Grano Verde')
+        self.assertEqual(datos['antecesor'], 'Papa')
+
+    def test_se_puede_pedir_la_recomendacion_sin_responder_nada(self):
+        self.client.force_login(self.usuario)
+        r = self.client.post(reverse('recomendaciones:generar', args=[self.parcela.pk]), {'mes': 11})
+        self.assertEqual(r.status_code, 302)
+        self.assertEqual(Recomendacion.objects.filter(parcela=self.parcela).count(), 1)
+
+    def test_la_respuesta_queda_guardada_en_la_recomendacion(self):
+        self.client.force_login(self.usuario)
+        self.client.post(reverse('recomendaciones:generar', args=[self.parcela.pk]), {'mes': 11, 'tierra': 'pesada'})
+        rec = Recomendacion.objects.get(parcela=self.parcela)
+        self.assertTrue(rec.suelo['arcilla']['declarada'])

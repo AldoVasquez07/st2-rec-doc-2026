@@ -2,7 +2,7 @@ from datetime import date, timedelta
 
 from django import forms
 from django.core.exceptions import ValidationError
-
+from cultivos.models import Cultivo
 from .models import Siembra
 
 
@@ -38,3 +38,23 @@ class ValoracionForm(forms.Form):
         required=False, max_length=300, label='Comentario (opcional)',
         widget=forms.Textarea(attrs={'rows': 3, 'class': 'form-control', 'maxlength': 300,
                                      'placeholder': 'Ej.: hubo mucha plaga, el agua llegó tarde...'}))
+
+
+class PreguntasForm(forms.Form):
+    """Preguntas opcionales en lenguaje cotidiano para afinar la recomendación (RF-0004)."""
+    TIERRA = [
+        ('', 'No sé / prefiero no responder'),
+        ('suelta', 'Suelta: se desmorona y el agua se filtra rápido'),
+        ('media', 'Normal: se puede amasar y el agua baja con calma'),
+        ('pesada', 'Pesada: se pega, hace barro y el agua se empoza'),
+    ]
+    tierra = forms.ChoiceField(required=False, choices=TIERRA, label='¿Cómo es la tierra de su chacra?',
+                               widget=forms.Select(attrs={'class': 'form-select'}))
+    ultimo_cultivo = forms.ModelChoiceField(
+        required=False, queryset=Cultivo.objects.filter(activo=True), empty_label='No recuerdo / no sembré',
+        label='¿Qué sembró la última vez en esta parcela?', widget=forms.Select(attrs={'class': 'form-select'}))
+
+    def __init__(self, *args, preguntar_cultivo=True, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not preguntar_cultivo:       # si ya tiene historial, no se le vuelve a preguntar
+            del self.fields['ultimo_cultivo']

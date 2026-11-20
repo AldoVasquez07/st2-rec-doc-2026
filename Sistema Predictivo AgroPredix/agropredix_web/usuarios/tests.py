@@ -178,3 +178,17 @@ class AuditoriaTests(PruebaBase):
         self.crear_usuario()
         self.client.post(reverse('usuarios:login'), {'username': '987654321', 'password': 'mala'})
         self.assertEqual(RegistroAcceso.objects.count(), 0)
+        
+
+class EliminarCuentaTests(PruebaBase):
+    def test_con_clave_correcta_borra_la_cuenta(self):
+        u = self.crear_usuario()
+        self.client.force_login(u)
+        self.client.post(reverse('usuarios:eliminar_cuenta'), {'password': self.clave})
+        self.assertFalse(Usuario.objects.filter(pk=u.pk).exists())
+
+    def test_con_clave_incorrecta_no_borra(self):
+        u = self.crear_usuario()
+        self.client.force_login(u)
+        self.client.post(reverse('usuarios:eliminar_cuenta'), {'password': 'otra'})
+        self.assertTrue(Usuario.objects.filter(pk=u.pk).exists())

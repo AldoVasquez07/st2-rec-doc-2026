@@ -20,6 +20,22 @@
         <a href="{% url 'parcelas:suelo' parcela.pk %}">agregarlo aquí</a> para afinar la recomendación.</p>
     {% endif %}
 
+
+    <div class="border rounded p-3 mb-3 bg-light">
+      <div class="fw-semibold mb-1">Preguntas opcionales <span class="text-muted fw-normal small">(puede saltarlas)</span></div>
+      <p class="small text-muted mb-2">Si las responde, la recomendación se ajusta mejor a su chacra. Si no, usamos los datos de su zona.</p>
+      <div class="mb-2">
+        <label for="{{ preguntas.tierra.id_for_label }}" class="form-label">{{ preguntas.tierra.label }}</label>
+        {{ preguntas.tierra }}
+      </div>
+      {% if 'ultimo_cultivo' in preguntas.fields %}
+      <div>
+        <label for="{{ preguntas.ultimo_cultivo.id_for_label }}" class="form-label">{{ preguntas.ultimo_cultivo.label }}</label>
+        {{ preguntas.ultimo_cultivo }}
+      </div>
+      {% endif %}
+    </div>
+
     <div class="row align-items-end">
       <div class="col-md-5">
         <label for="mes" class="form-label">¿En qué mes piensa sembrar?</label>

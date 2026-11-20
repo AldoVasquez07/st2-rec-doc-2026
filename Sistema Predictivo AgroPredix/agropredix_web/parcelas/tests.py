@@ -16,7 +16,8 @@ from django.urls import reverse
 from cultivos.models import Cultivo
 from usuarios.base_pruebas import PruebaBase
 
-from .forms import _campanas_anteriores
+from .forms import _campanas_anteriores, ParcelaForm
+
 from .models import AnalisisSuelo, Distrito, HistorialCampana, Parcela
 
 import json
@@ -535,3 +536,28 @@ class SincronizacionTests(PruebaBase):
         r = self.client.post(self.url, 'esto no es json', content_type='application/json')
         self.assertEqual(r.status_code, 400)
         self.assertEqual(HistorialCampana.objects.count() + AnalisisSuelo.objects.count(), 0)
+
+
+class DistritoAutomaticoTests(PruebaBase):
+    def setUp(self):
+        self.u = self.crear_usuario()
+        self.tiabaya = crear_distrito(ubigeo='040123', nombre='Tiabaya', lat=-16.449, lon=-71.592)
+        self.sachaca = crear_distrito(ubigeo='040117', nombre='Sachaca', lat=-16.424, lon=-71.566)
+
+    def datos(self, **extra):
+        return {'nombre': 'Mi chacra', 'area_ha': '1.5', 'latitud': '-16.45', 'longitud': '-71.59', **extra}
+
+    def test_sin_distrito_lo_detecta_por_el_mapa(self):
+        form = ParcelaForm(self.datos(), usuario=self.u)
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data['distrito'], self.tiabaya)
+
+    def test_si_el_agricultor_elige_distrito_se_respeta(self):
+        form = ParcelaForm(self.datos(distrito=self.sachaca.pk), usuario=self.u)
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.cleaned_data['distrito'], self.sachaca)
+
+    def test_muy_lejos_de_todo_pide_elegirlo(self):
+        form = ParcelaForm(self.datos(latitud='-15.0', longitud='-72.0'), usuario=self.u)
+        self.assertFalse(form.is_valid())
+        self.assertIn('distrito', form.errors)

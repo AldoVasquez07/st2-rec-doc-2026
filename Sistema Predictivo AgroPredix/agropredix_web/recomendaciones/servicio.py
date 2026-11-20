@@ -55,27 +55,38 @@ def analisis_vigente(parcela):
     """Análisis de suelo más reciente de la parcela (None si no cargó ninguno)."""
     return parcela.analisis.first()
 
+# Qué % de arcilla se supone según cómo describe su tierra el agricultor (RF-0004).
+# Valores de partida: los debe validar el agrónomo del panel de expertos.
+ARCILLA_POR_TIERRA = {'suelta': 10.0, 'media': 20.0, 'pesada': 40.0}
 
-def _resumen_suelo(ranking, suelo):
-    """Qué valores de suelo se usaron y si vienen del análisis o de la estimación por zona."""
+def _resumen_suelo(ranking, suelo, arcilla_declarada=False):
+    """Qué valores de suelo se usaron y de dónde vienen: análisis, lo que indicó el agricultor o la zona."""
     ent = ranking[0]['_ctx']['entradas']
 
     def dato(clave, medido):
         v = ent.get(clave)
         return {'valor': None if v is None else round(float(v), 1), 'medido': medido}
 
+    arcilla_medida = bool(suelo and suelo.arcilla is not None)
     return {'ph': dato('ph', bool(suelo and suelo.ph is not None)),
-            'arcilla': dato('arcilla', bool(suelo and suelo.arcilla is not None)),
+            'arcilla': {**dato('arcilla', arcilla_medida), 'declarada': arcilla_declarada and not arcilla_medida},
             'fecha': f'{suelo.fecha:%d/%m/%Y}' if suelo else ''}
 
 
-def recomendar_para_parcela(parcela, mes):
-    """Ranking completo para la parcela. Devuelve dict listo para la plantilla."""
+def recomendar_para_parcela(parcela, mes, tierra=None, ultimo_cultivo=None):
+    """Ranking completo para la parcela. Devuelve dict listo para la plantilla.
+
+    `tierra` ('suelta', 'media' o 'pesada') y `ultimo_cultivo` (nombre) son respuestas opcionales del agricultor.
+    Orden de prioridad: análisis de laboratorio > respuesta del agricultor > estimación de la zona.
+    """
     clave = clave_distrito(parcela.distrito)
-    ant = antecesor_de(parcela)
+    ant = antecesor_de(parcela) or ultimo_cultivo     # el historial registrado manda sobre lo que responda
     suelo = analisis_vigente(parcela)
     # Lo que falte en el análisis (pH o arcilla) lo completa el motor con la estimación de la zona
     laboratorio = {'ph': suelo.ph, 'arcilla': suelo.arcilla} if suelo else {}
+    declarada = ARCILLA_POR_TIERRA.get(tierra)
+    if declarada is not None and laboratorio.get('arcilla') is None:
+        laboratorio['arcilla'] = declarada
     m = modelo()
     try:
         ranking = recomendar(m, clave, mes, antecesor=ant, **laboratorio)
@@ -87,7 +98,7 @@ def recomendar_para_parcela(parcela, mes):
         r['explicacion'] = explicar(r, m)
         r['explicacion_detallada'] = explicar(r, m, detallado=True)
     return {'ranking': ranking, 'antecesor': ant, 'mes': int(mes), 'distrito': clave,
-            'suelo': _resumen_suelo(ranking, suelo)}
+            'suelo': _resumen_suelo(ranking, suelo, arcilla_declarada=declarada is not None)}
 
 
 def nombres_distritos_cubiertos():

@@ -11,4 +11,5 @@ urlpatterns = [
     path('registro/', views.RegistroView.as_view(), name='registro'),
     path('perfil/', views.PerfilView.as_view(), name='perfil'),
     path('perfil/clave/', views.CambiarClaveView.as_view(), name='cambiar_clave'),
+    path('perfil/eliminar/', views.EliminarCuentaView.as_view(), name='eliminar_cuenta'),
 ]

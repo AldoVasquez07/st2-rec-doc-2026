@@ -1,13 +1,14 @@
 from django.contrib import messages
-from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.urls import reverse_lazy
 from django.views.generic import FormView, TemplateView, UpdateView
 from alertas.servicio import alertas_de_usuario
 from recomendaciones.seguimiento import pendientes_de_valorar
-from .forms import CambiarClaveForm, LoginForm, PerfilForm, RegistroForm
 from recordatorios.models import Recordatorio
+from django.contrib.auth import login, logout
+from .forms import CambiarClaveForm, EliminarCuentaForm, LoginForm, PerfilForm, RegistroForm
+
 
 class IngresarView(LoginView):
     template_name = 'usuarios/login.html'
@@ -48,6 +49,24 @@ class CambiarClaveView(LoginRequiredMixin, PasswordChangeView):
     def form_valid(self, form):
         messages.success(self.request, 'Su contraseña fue cambiada.')
         return super().form_valid(form)
+    
+    
+class EliminarCuentaView(LoginRequiredMixin, FormView):
+    template_name = 'usuarios/eliminar_cuenta.html'
+    form_class = EliminarCuentaForm
+    success_url = reverse_lazy('usuarios:login')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['usuario'] = self.request.user
+        return kwargs
+
+    def form_valid(self, form):
+        usuario = self.request.user
+        logout(self.request)        # registra la salida y limpia la sesión
+        usuario.delete()            # borra también parcelas, recomendaciones, siembras, consultas y avisos
+        messages.success(self.request, 'Su cuenta y todos sus datos fueron eliminados.')
+        return super().form_valid(form)
 
 
 class HomeView(LoginRequiredMixin, TemplateView):
@@ -60,3 +79,4 @@ class HomeView(LoginRequiredMixin, TemplateView):
         ctx['alertas'] = alertas_de_usuario(self.request.user)
         ctx['recordatorios'] = list(Recordatorio.objects.filter(usuario=self.request.user, leido=False)[:3])
         return ctx
+    

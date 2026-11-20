@@ -113,3 +113,18 @@ class PerfilForm(EstiloBootstrapMixin, forms.ModelForm):
 
 class CambiarClaveForm(EstiloBootstrapMixin, PasswordChangeForm):
     """Pide la clave anterior (criterio de HU-0015)."""
+    
+    
+class EliminarCuentaForm(EstiloBootstrapMixin, forms.Form):
+    password = forms.CharField(label='Escriba su contraseña para confirmar', strip=False,
+                               widget=forms.PasswordInput)
+
+    def __init__(self, *args, usuario, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.usuario = usuario
+
+    def clean_password(self):
+        valor = self.cleaned_data['password']
+        if not self.usuario.check_password(valor):
+            raise ValidationError('La contraseña no es correcta.')
+        return valor

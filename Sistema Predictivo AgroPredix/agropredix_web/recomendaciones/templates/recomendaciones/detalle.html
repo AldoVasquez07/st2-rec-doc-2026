@@ -16,7 +16,7 @@
     pH {{ rec.suelo.ph.valor|default_if_none:"—" }}
     ({% if rec.suelo.ph.medido %}de su análisis del {{ rec.suelo.fecha }}{% else %}estimado para su zona{% endif %}) ·
     arcilla {{ rec.suelo.arcilla.valor|default_if_none:"—" }} %
-    ({% if rec.suelo.arcilla.medido %}de su análisis del {{ rec.suelo.fecha }}{% else %}estimada para su zona{% endif %})
+    ({% if rec.suelo.arcilla.medido %}de su análisis del {{ rec.suelo.fecha }}{% elif rec.suelo.arcilla.declarada %}según lo que usted indicó{% else %}estimada para su zona{% endif %})
     {% if not rec.suelo.ph.medido or not rec.suelo.arcilla.medido %}·
       <a href="{% url 'parcelas:suelo' parcela.pk %}">Agregar análisis de suelo</a>{% endif %}
   </div>
